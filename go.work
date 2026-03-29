@@ -1,6 +1,10 @@
 go 1.26.1
 
 use (
+	./examples/finance-orders
+	./examples/game-realtime
+	./examples/iot-telemetry
+	./examples/notifications
 	./proto-core
 	./server
 )
