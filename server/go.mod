@@ -4,6 +4,7 @@ go 1.26.1
 
 require (
 	github.com/flynn/noise v1.1.0
+	github.com/gorilla/websocket v1.5.3
 	google.golang.org/protobuf v1.36.11
 )
 
