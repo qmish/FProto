@@ -43,29 +43,29 @@ gantt
 
 ### 0.1 Инфраструктура разработки
 
-- [ ] **T-0.1.1** Выбор языка серверной части (Go vs Rust) -- провести сравнительный анализ по критериям: экосистема Noise/Kafka/QUIC, производительность, скорость разработки
-- [ ] **T-0.1.2** Выбор языков клиентских SDK (Swift / Kotlin / TypeScript) -- зафиксировать в ADR
-- [ ] **T-0.1.3** Инициализация монорепозитория -- структура каталогов: `proto/`, `server/`, `sdk/`, `docs/`, `deploy/`
-- [ ] **T-0.1.4** Настройка CI pipeline (GitHub Actions / GitLab CI) -- линтинг, сборка, юнит-тесты
-- [ ] **T-0.1.5** Настройка линтеров и форматтеров (golangci-lint / clippy, protolint)
-- [ ] **T-0.1.6** Создание dev-окружения (Docker Compose): Redis, PostgreSQL, Kafka (single-node), MinIO
+- [x] **T-0.1.1** Выбор языка серверной части (Go vs Rust) -- провести сравнительный анализ по критериям: экосистема Noise/Kafka/QUIC, производительность, скорость разработки
+- [x] **T-0.1.2** Выбор языков клиентских SDK (Swift / Kotlin / TypeScript) -- зафиксировать в ADR
+- [x] **T-0.1.3** Инициализация монорепозитория -- структура каталогов: `proto/`, `server/`, `sdk/`, `docs/`, `deploy/`
+- [x] **T-0.1.4** Настройка CI pipeline (GitHub Actions / GitLab CI) -- линтинг, сборка, юнит-тесты
+- [x] **T-0.1.5** Настройка линтеров и форматтеров (golangci-lint / clippy, protolint)
+- [x] **T-0.1.6** Создание dev-окружения (Docker Compose): Redis, PostgreSQL, Kafka (single-node), MinIO
 
 ### 0.2 Protobuf-схемы
 
-- [ ] **T-0.2.1** Определить `Frame` (session_id, seq, ack, encrypted_payload)
-- [ ] **T-0.2.2** Определить `AppMessage` (message_id, timestamp, oneof body)
-- [ ] **T-0.2.3** Определить типы `ChatMessage`, `Command`, `MediaChunk`, `Ack`, `Ping`
-- [ ] **T-0.2.4** Настроить генерацию кода из .proto (Go, Swift, Kotlin, TypeScript)
-- [ ] **T-0.2.5** Написать валидационные тесты для сериализации/десериализации
+- [x] **T-0.2.1** Определить `Frame` (session_id, seq, ack, encrypted_payload)
+- [x] **T-0.2.2** Определить `AppMessage` (message_id, timestamp, oneof body)
+- [x] **T-0.2.3** Определить типы `ChatMessage`, `Command`, `MediaChunk`, `Ack`, `Ping`
+- [x] **T-0.2.4** Настроить генерацию кода из .proto (Go, Swift, Kotlin, TypeScript)
+- [x] **T-0.2.5** Написать валидационные тесты для сериализации/десериализации
 
 ### 0.3 Proof of Concept
 
-- [ ] **T-0.3.1** Реализовать Noise_XX handshake (XX pattern, X25519, ChaChaPoly, BLAKE2s) -- библиотека `flynn/noise` (Go) или `snow` (Rust)
-- [ ] **T-0.3.2** Реализовать WebSocket-транспорт (клиент + сервер)
-- [ ] **T-0.3.3** Интегрировать Noise handshake с WebSocket -- шифрование/дешифрование Frame
-- [ ] **T-0.3.4** Эхо-сервер: приём зашифрованного Frame, расшифровка, отправка обратно
-- [ ] **T-0.3.5** Бенчмарк: throughput (msg/sec), latency (p50/p99), CPU/RAM при 1K/10K concurrent connections
-- [ ] **T-0.3.6** Документирование результатов PoC, принятие/отклонение технологических решений
+- [x] **T-0.3.1** Реализовать Noise_XX handshake (XX pattern, X25519, ChaChaPoly, BLAKE2s) -- библиотека `flynn/noise` (Go) или `snow` (Rust)
+- [x] **T-0.3.2** Реализовать WebSocket-транспорт (клиент + сервер)
+- [x] **T-0.3.3** Интегрировать Noise handshake с WebSocket -- шифрование/дешифрование Frame
+- [x] **T-0.3.4** Эхо-сервер: приём зашифрованного Frame, расшифровка, отправка обратно
+- [x] **T-0.3.5** Бенчмарк: throughput (msg/sec), latency (p50/p99), CPU/RAM при 1K/10K concurrent connections
+- [x] **T-0.3.6** Документирование результатов PoC, принятие/отклонение технологических решений
 
 **Критерии приёмки Фазы 0:**
 - Noise handshake работает поверх WebSocket, пакеты шифруются/дешифруются корректно
