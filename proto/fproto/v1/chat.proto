@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// ChatMessage -- текстовое сообщение в чате.
+message ChatMessage {
+  // ID чата (1-to-1 или группа).
+  bytes conversation_id = 1;
+
+  bytes sender_id = 2;
+
+  // Только для 1-to-1; пусто для групповых сообщений.
+  bytes recipient_id = 3;
+
+  // Только для групповых сообщений.
+  bytes group_id = 4;
+
+  ChatAction action = 5;
+  string text = 6;
+
+  // message_id сообщения, на которое отвечает.
+  bytes reply_to = 7;
+
+  repeated Attachment attachments = 8;
+
+  enum ChatAction {
+    CHAT_ACTION_UNSPECIFIED = 0;
+    SEND = 1;
+    EDIT = 2;
+    DELETE = 3;
+    REACTION = 4;
+  }
+}
+
+// Attachment -- вложение (ссылка на медиафайл).
+message Attachment {
+  string mime_type = 1;
+  string url = 2;
+  uint64 size_bytes = 3;
+  // Inline-миниатюра (до 4 КБ).
+  bytes thumbnail = 4;
+}

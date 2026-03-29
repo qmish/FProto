@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// Frame -- транспортный пакет протокола FProto.
+// Все транспорты (WebSocket, QUIC, gRPC) передают одинаковые Frame.
+message Frame {
+  // UUID сессии (16 байт, UUIDv4 или UUIDv7).
+  bytes session_id = 1;
+
+  // Монотонный номер пакета отправителя.
+  uint64 seq = 2;
+
+  // Подтверждение последнего принятого seq от другой стороны.
+  uint64 ack = 3;
+
+  // Зашифрованный AppMessage (ChaCha20-Poly1305).
+  bytes encrypted_payload = 4;
+}
+
+// HandshakeMessage -- сообщение Noise XX handshake.
+message HandshakeMessage {
+  HandshakeType type = 1;
+
+  // Данные Noise handshake (ephemeral/static ключи, шифротекст).
+  bytes payload = 2;
+
+  enum HandshakeType {
+    HANDSHAKE_TYPE_UNSPECIFIED = 0;
+    // Клиент -> Сервер: ephemeral public key.
+    INIT = 1;
+    // Сервер -> Клиент: e, ee, s, es.
+    RESPONSE = 2;
+    // Клиент -> Сервер: s, se (завершение handshake).
+    FINISH = 3;
+  }
+}

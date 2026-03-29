@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// SyncRequest -- запрос на синхронизацию пропущенных сообщений.
+message SyncRequest {
+  // Последний принятый message_id (UUIDv7).
+  bytes last_seen_message_id = 1;
+
+  // Лимит сообщений для пагинации.
+  uint32 max_messages = 2;
+}
+
+// SenderKeyDistribution -- распространение группового ключа шифрования.
+message SenderKeyDistribution {
+  bytes group_id = 1;
+  bytes sender_id = 2;
+  uint32 key_id = 3;
+
+  // Начальный chain key (32 байта).
+  bytes chain_key = 4;
+
+  // Публичный ключ подписи (Ed25519).
+  bytes signing_key = 5;
+}
