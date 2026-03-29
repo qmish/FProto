@@ -1,0 +1,26 @@
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - unparam
+    - gosec
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/qmish/FProto
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+issues:
+  max-issues-per-linter: 50
+  max-same-issues: 10
