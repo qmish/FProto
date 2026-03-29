@@ -1,0 +1,27 @@
+[package]
+name = "fproto-core"
+version = "0.1.0"
+edition = "2021"
+description = "FProto protocol SDK for Rust — Noise XX handshake, AEAD encryption, session state machine"
+license = "MIT"
+repository = "https://github.com/qmish/FProto"
+
+[dependencies]
+snow = "0.9"
+chacha20poly1305 = "0.10"
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+hkdf = "0.12"
+sha2 = "0.10"
+rand = "0.8"
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+thiserror = "1"
+zeroize = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full", "test-util"] }
+
+[[example]]
+name = "echo"
+path = "examples/echo.rs"

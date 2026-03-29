@@ -73,6 +73,22 @@ FProto -- модульный коммуникационный протокол, 
 | [Сетевая связанность](docs/Network-Connectivity.md) | Матрица связанности компонентов, протоколы, порты, service discovery |
 | [Инфраструктура](docs/Infrastructure.md) | Kubernetes, Kafka-кластер, Redis, PostgreSQL, CI/CD, мониторинг |
 
+## Мультиязычные Starter Pack-и
+
+SDK-библиотеки для 7 языков, реализующие ядро протокола FProto:
+
+| Язык | Пакет | Транспорт | Статус |
+|------|-------|-----------|--------|
+| Go | `proto-core` | WebSocket, QUIC, gRPC | Основная реализация |
+| Rust | `fproto-core` crate | WebSocket, QUIC | Starter Pack |
+| Python | `fproto` pip | WebSocket | Starter Pack |
+| Node.js/TS | `@fproto/core` npm | WebSocket | Starter Pack |
+| Java | `io.fproto:fproto-core` Maven | WebSocket | Starter Pack |
+| .NET | `FProto.Core` NuGet | WebSocket, QUIC | Starter Pack |
+| PHP | `fproto/core` Composer | WebSocket | Starter Pack |
+
+Подробнее: [starters/README.md](starters/README.md)
+
 ## Сценарии переиспользования
 
 Ядро протокола (транспорт + сессии + криптография + маршрутизация через Kafka) может быть адаптировано для:
