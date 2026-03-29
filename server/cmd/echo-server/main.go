@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/qmish/FProto/server/internal/crypto"
-	"github.com/qmish/FProto/server/internal/transport"
+	"github.com/qmish/FProto/proto-core/crypto"
+	"github.com/qmish/FProto/proto-core/transport"
 )
 
 func main() {

@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/qmish/FProto/server/internal/inbox"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/observability"
 	syncpkg "github.com/qmish/FProto/server/internal/sync"
 )
 

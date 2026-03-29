@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/qmish/FProto/server/internal/media"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/observability"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
 )
 

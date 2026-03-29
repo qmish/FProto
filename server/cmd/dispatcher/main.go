@@ -15,7 +15,7 @@ import (
 
 	"github.com/qmish/FProto/server/internal/dispatcher"
 	kafkapkg "github.com/qmish/FProto/server/internal/kafka"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/observability"
 	"github.com/qmish/FProto/server/internal/outbox"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
 )

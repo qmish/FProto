@@ -21,10 +21,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/qmish/FProto/server/internal/crypto"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/crypto"
+	"github.com/qmish/FProto/proto-core/observability"
+	"github.com/qmish/FProto/proto-core/transport"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
-	"github.com/qmish/FProto/server/internal/transport"
 )
 
 var (

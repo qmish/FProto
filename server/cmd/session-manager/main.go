@@ -14,9 +14,10 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/observability"
+	"github.com/qmish/FProto/proto-core/session"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
-	"github.com/qmish/FProto/server/internal/session"
+	"github.com/qmish/FProto/server/internal/sessiongrpc"
 )
 
 func main() {
@@ -85,7 +86,7 @@ func main() {
 	}
 
 	srv := grpc.NewServer(observability.GRPCServerOptions(logger)...)
-	pb.RegisterSessionServiceServer(srv, session.NewGRPCServer(mgr))
+	pb.RegisterSessionServiceServer(srv, sessiongrpc.NewServer(mgr))
 
 	go func() {
 		sigCh := make(chan os.Signal, 1)

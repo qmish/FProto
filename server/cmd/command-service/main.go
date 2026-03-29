@@ -14,7 +14,7 @@ import (
 
 	"github.com/qmish/FProto/server/internal/commands"
 	"github.com/qmish/FProto/server/internal/groups"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/observability"
 )
 
 func main() {

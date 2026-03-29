@@ -12,8 +12,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"github.com/qmish/FProto/server/internal/crypto"
-	"github.com/qmish/FProto/server/internal/observability"
+	"github.com/qmish/FProto/proto-core/crypto"
+	"github.com/qmish/FProto/proto-core/observability"
+	"github.com/qmish/FProto/server/internal/cryptogrpc"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
 )
 
@@ -66,7 +67,7 @@ func main() {
 	}
 
 	srv := grpc.NewServer(observability.GRPCServerOptions(logger)...)
-	pb.RegisterCryptoServiceServer(srv, crypto.NewCryptoGRPCServer(serverKey))
+	pb.RegisterCryptoServiceServer(srv, cryptogrpc.NewServer(serverKey))
 
 	go func() {
 		sigCh := make(chan os.Signal, 1)
