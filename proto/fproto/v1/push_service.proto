@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+import "fproto/v1/app_message.proto";
+
+// PushService -- gRPC API доставки сообщений клиентам (LLD §7.4).
+service PushService {
+  rpc PushToUser(PushToUserRequest) returns (PushResponse);
+  rpc PushToSession(PushToSessionRequest) returns (PushResponse);
+}
+
+message PushToUserRequest {
+  bytes user_id = 1;
+  AppMessage message = 2;
+}
+
+message PushToSessionRequest {
+  bytes session_id = 1;
+  AppMessage message = 2;
+}
+
+message PushResponse {
+  bool delivered = 1;
+  uint32 active_sessions = 2;
+}
