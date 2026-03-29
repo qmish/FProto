@@ -1,0 +1,75 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Messages Sent / sec",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "rate(fproto_messages_sent_total[1m])", "legendFormat": "{{job}} / {{transport}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "title": "Messages Received / sec",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "rate(fproto_messages_received_total[1m])", "legendFormat": "{{job}} / {{transport}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "title": "Active Connections",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "fproto_active_connections", "legendFormat": "{{transport}}" }
+      ]
+    },
+    {
+      "title": "Active Sessions",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 8 },
+      "targets": [
+        { "expr": "fproto_active_sessions", "legendFormat": "sessions" }
+      ]
+    },
+    {
+      "title": "Handshake Duration (p95)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, rate(fproto_handshake_duration_seconds_bucket[5m]))", "legendFormat": "p95 {{transport}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Error Rate (gRPC)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
+      "targets": [
+        { "expr": "rate(rpc_server_duration_milliseconds_count{rpc_grpc_status_code!=\"OK\"}[5m])", "legendFormat": "{{job}} {{rpc_method}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["fproto"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "FProto Overview",
+  "uid": "fproto-overview"
+}
