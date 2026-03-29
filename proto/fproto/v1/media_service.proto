@@ -4,10 +4,17 @@ package fproto.v1;
 
 option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
 
-// MediaService -- gRPC API для управления загрузкой/скачиванием медиафайлов (LLD §7.5).
+// MediaService -- gRPC API для управления загрузкой/скачиванием медиафайлов.
+// Использует стратегию Presigned URL: клиент получает URL для прямой загрузки в S3/MinIO.
+// Метаданные хранятся в PostgreSQL (таблица media_uploads). См. LLD §7.5.
 service MediaService {
+  // Инициализирует загрузку. Возвращает presigned URL для PUT в S3 и stream_id.
   rpc InitUpload(InitUploadRequest) returns (InitUploadResponse);
+
+  // Подтверждает завершение загрузки. Проверяет hash, обновляет статус.
   rpc CompleteUpload(CompleteUploadRequest) returns (CompleteUploadResponse);
+
+  // Возвращает presigned URL для скачивания медиафайла.
   rpc GetDownloadURL(GetDownloadURLRequest) returns (GetDownloadURLResponse);
 }
 

@@ -4,12 +4,24 @@ package fproto.v1;
 
 option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
 
-// CryptoService -- gRPC API криптографических операций (LLD §7.2).
+// CryptoService -- gRPC API криптографических операций.
+// Реализует Noise_XX_25519_ChaChaPoly_BLAKE2s handshake,
+// шифрование/дешифрование сообщений (ChaCha20-Poly1305),
+// и ротацию ключей (HKDF-SHA256). См. LLD §7.2.
 service CryptoService {
+  // Инициализирует Noise XX handshake. Возвращает handshake_state_id для последующих шагов.
   rpc InitiateHandshake(HandshakeInitRequest) returns (HandshakeInitResponse);
+
+  // Обрабатывает следующий шаг handshake. При completed=true возвращает crypto_state.
   rpc ProcessHandshake(HandshakeStepRequest) returns (HandshakeStepResponse);
+
+  // Шифрует plaintext с привязкой к session_id и seq (AEAD nonce = seq-based).
   rpc Encrypt(EncryptRequest) returns (EncryptResponse);
+
+  // Дешифрует ciphertext. Проверяет AEAD тег и seq.
   rpc Decrypt(DecryptRequest) returns (DecryptResponse);
+
+  // Выполняет ротацию ключей сессии (HKDF-SHA256 от текущего ключа).
   rpc Rekey(RekeyRequest) returns (RekeyResponse);
 }
 
