@@ -83,40 +83,40 @@ gantt
 
 ### 1.1 Session Manager
 
-- [ ] **T-1.1.1** Спроектировать state machine сессии: `connecting` -> `active` -> `sleeping` -> `expired`
-- [ ] **T-1.1.2** Реализовать хранение сессий в Redis: ключ `session:<session_id>`, поля: user_id, device_id, crypto_state, connections, created_at, expires_at
-- [ ] **T-1.1.3** Реализовать дублирование состояния сессии в PostgreSQL (для recovery)
-- [ ] **T-1.1.4** Реализовать привязку сессии к устройству (device_id), поддержка нескольких соединений на сессию
-- [ ] **T-1.1.5** Реализовать таймауты: переход в `sleeping` (configurable, default 5 min), переход в `expired` (configurable, default 24h)
-- [ ] **T-1.1.6** Реализовать аутентификацию при создании сессии (токен-based)
-- [ ] **T-1.1.7** Unit-тесты Session Manager (все переходы состояний, edge cases)
+- [x] **T-1.1.1** Спроектировать state machine сессии: `connecting` -> `active` -> `sleeping` -> `expired`
+- [x] **T-1.1.2** Реализовать хранение сессий в Redis: ключ `session:<session_id>`, поля: user_id, device_id, crypto_state, connections, created_at, expires_at
+- [x] **T-1.1.3** Реализовать дублирование состояния сессии в PostgreSQL (для recovery)
+- [x] **T-1.1.4** Реализовать привязку сессии к устройству (device_id), поддержка нескольких соединений на сессию
+- [x] **T-1.1.5** Реализовать таймауты: переход в `sleeping` (configurable, default 5 min), переход в `expired` (configurable, default 24h)
+- [x] **T-1.1.6** Реализовать аутентификацию при создании сессии (токен-based)
+- [x] **T-1.1.7** Unit-тесты Session Manager (все переходы состояний, edge cases)
 
 ### 1.2 Криптографический слой
 
-- [ ] **T-1.2.1** Полная реализация Noise_XX_25519_ChaChaPoly_BLAKE2s -- серверная сторона
-- [ ] **T-1.2.2** Шифрование payload: ChaCha20-Poly1305 с 96-bit nonce (на основе seq counter)
-- [ ] **T-1.2.3** Реализовать ротацию ключей без разрыва сессии (Noise rekey)
-- [ ] **T-1.2.4** Защищённое хранение ключей в памяти (zeroize при уничтожении)
-- [ ] **T-1.2.5** Криптографически стойкий генератор для эфемерных ключей
-- [ ] **T-1.2.6** Тесты: корректность handshake, ротация, replay-атаки, подмена nonce
+- [x] **T-1.2.1** Полная реализация Noise_XX_25519_ChaChaPoly_BLAKE2s -- серверная сторона
+- [x] **T-1.2.2** Шифрование payload: ChaCha20-Poly1305 с 96-bit nonce (на основе seq counter)
+- [x] **T-1.2.3** Реализовать ротацию ключей без разрыва сессии (Noise rekey)
+- [x] **T-1.2.4** Защищённое хранение ключей в памяти (zeroize при уничтожении)
+- [x] **T-1.2.5** Криптографически стойкий генератор для эфемерных ключей
+- [x] **T-1.2.6** Тесты: корректность handshake, ротация, replay-атаки, подмена nonce
 
 ### 1.3 Транспорты
 
-- [ ] **T-1.3.1** Абстракция транспорта: интерфейс `Transport` (Connect, Send, Receive, Close)
-- [ ] **T-1.3.2** Реализация QUIC-транспорта (библиотека `quic-go` / `quinn`)
-- [ ] **T-1.3.3** Реализация gRPC streaming транспорта (bidirectional stream)
-- [ ] **T-1.3.4** Управление пулом соединений на сервере (выбор активного соединения для push)
-- [ ] **T-1.3.5** Reconnect-логика: автоматическое переподключение при потере соединения, сессия сохраняется
-- [ ] **T-1.3.6** Интеграционные тесты: все три транспорта (WS, QUIC, gRPC) с полным Noise handshake
+- [x] **T-1.3.1** Абстракция транспорта: интерфейс `Transport` (Connect, Send, Receive, Close)
+- [x] **T-1.3.2** Реализация QUIC-транспорта (библиотека `quic-go` / `quinn`)
+- [x] **T-1.3.3** Реализация gRPC streaming транспорта (bidirectional stream)
+- [x] **T-1.3.4** Управление пулом соединений на сервере (выбор активного соединения для push)
+- [x] **T-1.3.5** Reconnect-логика: автоматическое переподключение при потере соединения, сессия сохраняется
+- [x] **T-1.3.6** Интеграционные тесты: все три транспорта (WS, QUIC, gRPC) с полным Noise handshake
 
 ### 1.4 Клиентские SDK
 
-- [ ] **T-1.4.1** Go SDK (reference implementation) с абстракцией транспорта
-- [ ] **T-1.4.2** TypeScript/JS SDK (WebSocket-транспорт, noise-c.wasm)
-- [ ] **T-1.4.3** Kotlin SDK (OkHttp WebSocket, noise-java)
-- [ ] **T-1.4.4** Swift SDK (Starscream WebSocket, CryptoKit)
-- [ ] **T-1.4.5** SDK: автоматический выбор транспорта, reconnect, экспоненциальный backoff
-- [ ] **T-1.4.6** Интеграционные end-to-end тесты SDK <-> сервер
+- [x] **T-1.4.1** Go SDK (reference implementation) с абстракцией транспорта
+- [x] **T-1.4.2** TypeScript/JS SDK (WebSocket-транспорт, noise-c.wasm)
+- [x] **T-1.4.3** Kotlin SDK (OkHttp WebSocket, noise-java)
+- [x] **T-1.4.4** Swift SDK (Starscream WebSocket, CryptoKit)
+- [x] **T-1.4.5** SDK: автоматический выбор транспорта, reconnect, экспоненциальный backoff
+- [x] **T-1.4.6** Интеграционные end-to-end тесты SDK <-> сервер
 
 **Критерии приёмки Фазы 1:**
 - Клиент может подключиться по любому из трёх транспортов, пройти Noise handshake, обмениваться зашифрованными Frame
