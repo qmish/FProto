@@ -134,43 +134,43 @@ gantt
 
 ### 2.1 Dispatcher
 
-- [ ] **T-2.1.1** Реализовать Dispatcher: приём расшифрованных AppMessage, определение топика Kafka
-- [ ] **T-2.1.2** Маршрутизация: `user-<recipient_id>` для личных, `group-<group_id>` для групповых, `commands` для команд
-- [ ] **T-2.1.3** Партиционирование по ключу (recipient_id / group_id) для гарантии порядка
-- [ ] **T-2.1.4** Kafka producer: `acks=all`, `min.insync.replicas=2`, идемпотентный producer
-- [ ] **T-2.1.5** Unit-тесты маршрутизации, интеграционные тесты с Kafka
+- [x] **T-2.1.1** Реализовать Dispatcher: приём расшифрованных AppMessage, определение топика Kafka
+- [x] **T-2.1.2** Маршрутизация: `user-<recipient_id>` для личных, `group-<group_id>` для групповых, `commands` для команд
+- [x] **T-2.1.3** Партиционирование по ключу (recipient_id / group_id) для гарантии порядка
+- [x] **T-2.1.4** Kafka producer: `acks=all`, `min.insync.replicas=2`, идемпотентный producer
+- [x] **T-2.1.5** Unit-тесты маршрутизации, интеграционные тесты с Kafka
 
 ### 2.2 Outbox-паттерн
 
-- [ ] **T-2.2.1** Спроектировать таблицу `outbox` (PostgreSQL): id, message_id, topic, key, payload, status, created_at
-- [ ] **T-2.2.2** Реализовать транзакционную запись: сохранение в Outbox + отправка Ack клиенту
-- [ ] **T-2.2.3** Outbox relay: фоновый процесс, читает из Outbox, публикует в Kafka, обновляет статус
-- [ ] **T-2.2.4** Обработка сбоев: retry с экспоненциальным backoff, dead letter queue
-- [ ] **T-2.2.5** Тесты: гарантия at-least-once delivery при crash сервера
+- [x] **T-2.2.1** Спроектировать таблицу `outbox` (PostgreSQL): id, message_id, topic, key, payload, status, created_at
+- [x] **T-2.2.2** Реализовать транзакционную запись: сохранение в Outbox + отправка Ack клиенту
+- [x] **T-2.2.3** Outbox relay: фоновый процесс, читает из Outbox, публикует в Kafka, обновляет статус
+- [x] **T-2.2.4** Обработка сбоев: retry с экспоненциальным backoff, dead letter queue
+- [x] **T-2.2.5** Тесты: гарантия at-least-once delivery при crash сервера
 
 ### 2.3 SyncService (Consumer)
 
-- [ ] **T-2.3.1** Реализовать SyncService -- Kafka consumer group
-- [ ] **T-2.3.2** Inbox: сохранение входящих сообщений в PostgreSQL (таблица `inbox`: user_id, message_id, payload, delivered, created_at)
-- [ ] **T-2.3.3** Push онлайн-клиентам: доставка через Session Manager -> Transport Gateway
-- [ ] **T-2.3.4** Дедупликация по message_id (идемпотентная обработка)
-- [ ] **T-2.3.5** Интеграционные тесты consumer pipeline
+- [x] **T-2.3.1** Реализовать SyncService -- Kafka consumer group
+- [x] **T-2.3.2** Inbox: сохранение входящих сообщений в PostgreSQL (таблица `inbox`: user_id, message_id, payload, delivered, created_at)
+- [x] **T-2.3.3** Push онлайн-клиентам: доставка через Session Manager -> Transport Gateway
+- [x] **T-2.3.4** Дедупликация по message_id (идемпотентная обработка)
+- [x] **T-2.3.5** Интеграционные тесты consumer pipeline
 
 ### 2.4 Офлайн-синхронизация
 
-- [ ] **T-2.4.1** Клиент отправляет `last_seen_message_id` при подключении
-- [ ] **T-2.4.2** Session Manager выполняет `seek` на consumer к нужному offset
-- [ ] **T-2.4.3** Потоковая доставка пропущенных сообщений (backfill)
-- [ ] **T-2.4.4** Пагинация при большом количестве пропущенных сообщений
-- [ ] **T-2.4.5** Тесты: сценарии офлайн 1 час, 1 день, 7 дней
+- [x] **T-2.4.1** Клиент отправляет `last_seen_message_id` при подключении
+- [x] **T-2.4.2** Session Manager выполняет `seek` на consumer к нужному offset
+- [x] **T-2.4.3** Потоковая доставка пропущенных сообщений (backfill)
+- [x] **T-2.4.4** Пагинация при большом количестве пропущенных сообщений
+- [x] **T-2.4.5** Тесты: сценарии офлайн 1 час, 1 день, 7 дней
 
 ### 2.5 Kafka-инфраструктура
 
-- [ ] **T-2.5.1** Настройка топиков: `user-*` (128 партиций), `group-*` (64 партиций), `commands` (32 партиции), `events` (64 партиции)
-- [ ] **T-2.5.2** Replication factor = 3, min.insync.replicas = 2
-- [ ] **T-2.5.3** Retention policy: `user-*` -- 30 дней, `events` -- 90 дней
-- [ ] **T-2.5.4** Мониторинг Kafka: lag monitoring, consumer group health
-- [ ] **T-2.5.5** Документация по масштабированию партиций
+- [x] **T-2.5.1** Настройка топиков: `user-*` (128 партиций), `group-*` (64 партиций), `commands` (32 партиции), `events` (64 партиции)
+- [x] **T-2.5.2** Replication factor = 3, min.insync.replicas = 2
+- [x] **T-2.5.3** Retention policy: `user-*` -- 30 дней, `events` -- 90 дней
+- [x] **T-2.5.4** Мониторинг Kafka: lag monitoring, consumer group health
+- [x] **T-2.5.5** Документация по масштабированию партиций
 
 **Критерии приёмки Фазы 2:**
 - Сообщение проходит путь: Client -> Gateway -> Dispatcher -> Kafka -> SyncService -> Recipient

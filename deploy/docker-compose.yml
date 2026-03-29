@@ -112,7 +112,43 @@ services:
     depends_on:
       - session-manager
       - crypto-handler
-    command: ["/app/gateway", "-ws-addr", ":8080", "-quic-addr", ":8443"]
+      - dispatcher
+    command: ["/app/gateway", "-ws-addr", ":8080", "-quic-addr", ":8443", "-dispatcher", "dispatcher:50053"]
+
+  dispatcher:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.dispatcher
+    ports:
+      - "50053:50053"
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    command: ["/app/dispatcher", "-addr", ":50053", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092"]
+
+  sync-service:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.sync-service
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      REDIS_ADDR: redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      session-manager:
+        condition: service_started
+    command: ["/app/sync-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-redis", "redis:6379", "-push", "session-manager:50051"]
 
 volumes:
   redis-data:
