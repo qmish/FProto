@@ -55,3 +55,11 @@ func (w *WSConn) WriteMessage(data []byte) error {
 func (w *WSConn) Close() error {
 	return w.conn.Close()
 }
+
+func (w *WSConn) Type() Type {
+	return TypeWebSocket
+}
+
+func (w *WSConn) RemoteAddr() string {
+	return w.conn.RemoteAddr().String()
+}
