@@ -187,3 +187,75 @@ func TestRouteSenderKeyNoSender(t *testing.T) {
 		t.Fatal("expected error for sender key without sender_id")
 	}
 }
+
+func TestRouteSignaling(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Signaling{
+			Signaling: &pb.SignalingMessage{
+				RecipientId: []byte{0xaa, 0xbb},
+				Content: &pb.SignalingMessage_Offer{
+					Offer: &pb.SDPMessage{Sdp: "v=0...", Type: "offer"},
+				},
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "user-aabb" {
+		t.Fatalf("expected user-aabb, got %s", route.Topic)
+	}
+}
+
+func TestRouteSignalingIce(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Signaling{
+			Signaling: &pb.SignalingMessage{
+				RecipientId: []byte{0xcc},
+				Content: &pb.SignalingMessage_IceCandidate{
+					IceCandidate: &pb.IceCandidate{
+						Candidate: "candidate:...",
+						SdpMid:    "0",
+					},
+				},
+			},
+		},
+	}
+	route, _ := RouteMessage(msg)
+	if route.Topic != "user-cc" {
+		t.Fatalf("expected user-cc, got %s", route.Topic)
+	}
+}
+
+func TestRouteSignalingNoRecipient(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Signaling{
+			Signaling: &pb.SignalingMessage{},
+		},
+	}
+	_, err := RouteMessage(msg)
+	if err == nil {
+		t.Fatal("expected error for signaling without recipient")
+	}
+}
+
+func TestRouteSignalingStreamControl(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Signaling{
+			Signaling: &pb.SignalingMessage{
+				RecipientId: []byte{0xdd},
+				Content: &pb.SignalingMessage_StreamControl{
+					StreamControl: &pb.StreamControl{
+						Action:   pb.StreamControl_START,
+						StreamId: []byte{0x01},
+					},
+				},
+			},
+		},
+	}
+	route, _ := RouteMessage(msg)
+	if route.Topic != "user-dd" {
+		t.Fatalf("expected user-dd, got %s", route.Topic)
+	}
+}

@@ -29,6 +29,8 @@ func RouteMessage(msg *pb.AppMessage) (Route, error) {
 		return routeMedia(body.Media)
 	case *pb.AppMessage_SenderKey:
 		return routeSenderKey(body.SenderKey)
+	case *pb.AppMessage_Signaling:
+		return routeSignaling(body.Signaling)
 	default:
 		return Route{
 			Topic:        kafkapkg.TopicEvents,
@@ -89,5 +91,18 @@ func routeSenderKey(sk *pb.SenderKeyDistribution) (Route, error) {
 	return Route{
 		Topic:        kafkapkg.TopicEvents,
 		PartitionKey: sk.GroupId,
+	}, nil
+}
+
+func routeSignaling(sig *pb.SignalingMessage) (Route, error) {
+	if sig == nil {
+		return Route{}, fmt.Errorf("nil signaling message")
+	}
+	if len(sig.RecipientId) == 0 {
+		return Route{}, fmt.Errorf("signaling has no recipient_id")
+	}
+	return Route{
+		Topic:        "user-" + hex.EncodeToString(sig.RecipientId),
+		PartitionKey: sig.RecipientId,
 	}, nil
 }

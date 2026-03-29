@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// SignalingMessage -- WebRTC сигнализация через Proto-канал (LLD §10).
+message SignalingMessage {
+  bytes recipient_id = 1;
+  bytes stream_id = 2;
+
+  oneof content {
+    SDPMessage offer = 3;
+    SDPMessage answer = 4;
+    IceCandidate ice_candidate = 5;
+    StreamControl stream_control = 6;
+  }
+}
+
+message SDPMessage {
+  string sdp = 1;
+  string type = 2;
+}
+
+message IceCandidate {
+  string candidate = 1;
+  string sdp_mid = 2;
+  uint32 sdp_m_line_index = 3;
+}
+
+message StreamControl {
+  StreamAction action = 1;
+  bytes stream_id = 2;
+  repeated bytes participant_ids = 3;
+
+  enum StreamAction {
+    STREAM_ACTION_UNSPECIFIED = 0;
+    START = 1;
+    END = 2;
+    JOIN = 3;
+  }
+}
