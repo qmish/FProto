@@ -1,0 +1,41 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+bin/
+dist/
+
+# Environment
+.env
+.env.local
+
+# Generated protobuf code (regenerate with buf generate)
+# server/internal/protocol/gen/
+
+# Docker volumes
+deploy/data/
+
+# Coverage
+coverage.out
+coverage.html
+
+# Benchmarks
+*.bench
