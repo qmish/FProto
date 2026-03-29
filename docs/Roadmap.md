@@ -307,6 +307,54 @@ gantt
 
 ---
 
+## Фаза 6 -- Мультиязычные Starter Pack-и
+
+**Длительность:** 3--4 месяца
+**Цель:** SDK-библиотеки и шаблоны проектов для 7 языков/платформ, обеспечивающие совместимость с proto-core.
+**Зависимости:** Фаза 5 (proto-core, спецификация, conformance tests).
+
+### 6.1 SDK-библиотеки
+
+- [x] **T-6.1.1** Go Starter Pack: шаблонный проект с `proto-core` + echo-сервер/клиент
+- [x] **T-6.1.2** Rust SDK (`fproto-core` crate): `snow` (Noise XX), `quinn` (QUIC), `tokio-tungstenite` (WS), `chacha20poly1305`, `prost`+`tonic`
+- [x] **T-6.1.3** Python SDK (`fproto` pip): `noiseprotocol`, `websockets` (asyncio), `aioquic`, `cryptography`
+- [x] **T-6.1.4** Node.js/TypeScript SDK (`@fproto/core` npm): `noise-protocol`, `ws`, `@bufbuild/protobuf`, Node `crypto` (ChaCha20-Poly1305)
+- [x] **T-6.1.5** Java SDK (`io.fproto:fproto-core` Maven): `noise-java`, `Java-WebSocket`, JCA ChaCha20-Poly1305, `protobuf-java`+`grpc-java`
+- [x] **T-6.1.6** .NET SDK (`FProto.Core` NuGet): `Noise.NET`, `System.Net.WebSockets`, `System.Net.Quic`, `System.Security.Cryptography`
+- [x] **T-6.1.7** PHP SDK (`fproto/core` Composer): `noise-c` FFI, `sodium` (ChaCha20-Poly1305), `textalk/websocket`, `google/protobuf`
+
+### 6.2 Conformance-тесты для каждого языка
+
+- [x] **T-6.2.1** Go conformance (уже существует, верифицировать)
+- [x] **T-6.2.2** Rust conformance: `#[test]` модуль -- handshake, AEAD, state machine, round-trip
+- [x] **T-6.2.3** Python conformance: `pytest` -- handshake, AEAD, state machine, round-trip
+- [x] **T-6.2.4** Node.js conformance: `vitest` -- handshake, AEAD, state machine, round-trip
+- [x] **T-6.2.5** Java conformance: JUnit 5 -- handshake, AEAD, state machine, round-trip
+- [x] **T-6.2.6** .NET conformance: xUnit -- handshake, AEAD, state machine, round-trip
+- [x] **T-6.2.7** PHP conformance: PHPUnit -- handshake, AEAD, state machine, round-trip
+
+### 6.3 Инфраструктура и интероперабельность
+
+- [x] **T-6.3.1** `buf.gen.*.yaml` для всех 6 языков (Rust, Python, TS, Java, C#, PHP)
+- [x] **T-6.3.2** Cross-language interop test: Go echo-сервер + клиенты на каждом языке
+- [x] **T-6.3.3** Документация `starters/README.md` + quickstart для каждого языка
+- [ ] **T-6.3.4** CI pipeline: сборка и тестирование всех SDK в GitHub Actions
+
+### 6.4 Публикация
+
+- [ ] **T-6.4.1** Публикация Rust crate на crates.io
+- [ ] **T-6.4.2** Публикация Python package на PyPI
+- [ ] **T-6.4.3** Публикация npm package, Maven artifact, NuGet package, Composer package
+- [x] **T-6.4.4** Обновление README.md проекта, выпуск v1.1.0
+
+**Критерии приёмки Фазы 6:**
+- Каждый SDK проходит conformance test suite (Minimal уровень минимум)
+- Go echo-сервер принимает соединения от клиентов на всех 7 языках
+- Шаблонный проект для каждого языка собирается и запускается "из коробки"
+- Пакеты опубликованы в соответствующих реестрах
+
+---
+
 ## Сводная таблица зависимостей
 
 | Фаза | Зависит от | Блокирует |
@@ -316,7 +364,8 @@ gantt
 | Фаза 2 | Фаза 1 | Фаза 3 |
 | Фаза 3 | Фаза 2 | Фаза 4 |
 | Фаза 4 | Фаза 3 | -- |
-| Фаза 5 | Фаза 1 | -- (параллельно) |
+| Фаза 5 | Фаза 1 | Фаза 6 |
+| Фаза 6 | Фаза 5 | -- |
 
 ## Общая оценка
 
@@ -328,4 +377,5 @@ gantt
 | Фаза 3 | 2--3 мес. | 3--4 инженера |
 | Фаза 4 | 2 мес. | 2--3 инженера |
 | Фаза 5 | параллельно | 1--2 инженера |
-| **Итого** | **~11--14 мес.** | **3--4 инженера (пик)** |
+| Фаза 6 | 3--4 мес. | 2--3 инженера |
+| **Итого** | **~14--18 мес.** | **3--4 инженера (пик)** |

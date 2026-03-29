@@ -1,0 +1,8 @@
+version: v2
+plugins:
+  - remote: buf.build/community/neoeinstein-prost
+    out: ../starters/rust/fproto-core/src/gen
+    opt:
+      - compile_well_known_types
+  - remote: buf.build/community/neoeinstein-tonic
+    out: ../starters/rust/fproto-core/src/gen
