@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// Command -- административная команда.
+message Command {
+  CommandType type = 1;
+
+  // Целевой ID (group_id, user_id и т.д.).
+  bytes target_id = 2;
+
+  // Сериализованные параметры команды.
+  bytes payload = 3;
+
+  enum CommandType {
+    COMMAND_TYPE_UNSPECIFIED = 0;
+    CREATE_GROUP = 1;
+    ADD_MEMBER = 2;
+    REMOVE_MEMBER = 3;
+    UPDATE_GROUP_SETTINGS = 4;
+    BAN_MEMBER = 5;
+    DELETE_MESSAGE = 6;
+  }
+}

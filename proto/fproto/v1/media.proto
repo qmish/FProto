@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// MediaChunk -- фрагмент медиафайла для потоковой загрузки.
+message MediaChunk {
+  // UUID загрузки.
+  bytes stream_id = 1;
+
+  uint32 chunk_index = 2;
+  uint32 total_chunks = 3;
+
+  // Содержимое чанка (до 64 КБ).
+  bytes data = 4;
+
+  // SHA-256 чанка.
+  bytes hash = 5;
+
+  // Только в первом чанке.
+  string mime_type = 6;
+
+  // Только в первом чанке.
+  uint64 total_size = 7;
+}

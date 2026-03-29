@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+import "google/protobuf/timestamp.proto";
+import "fproto/v1/chat.proto";
+import "fproto/v1/command.proto";
+import "fproto/v1/media.proto";
+import "fproto/v1/ack.proto";
+import "fproto/v1/sync.proto";
+
+// AppMessage -- прикладное сообщение, передаваемое внутри Frame.encrypted_payload.
+message AppMessage {
+  // UUIDv7 (16 байт, обеспечивает сортировку по времени).
+  bytes message_id = 1;
+
+  // Временная метка создания сообщения.
+  google.protobuf.Timestamp timestamp = 2;
+
+  oneof body {
+    ChatMessage chat = 3;
+    Command command = 4;
+    MediaChunk media = 5;
+    Ack ack = 6;
+    Ping ping = 7;
+    Pong pong = 8;
+    SenderKeyDistribution sender_key = 9;
+    SyncRequest sync_request = 10;
+  }
+}

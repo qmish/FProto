@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// Ack -- подтверждение получения/доставки/прочтения сообщения.
+message Ack {
+  // message_id подтверждаемого сообщения.
+  bytes ack_message_id = 1;
+
+  AckStatus status = 2;
+
+  enum AckStatus {
+    ACK_STATUS_UNSPECIFIED = 0;
+    // Сервер принял сообщение.
+    RECEIVED = 1;
+    // Доставлено получателю.
+    DELIVERED = 2;
+    // Прочитано получателем.
+    READ = 3;
+    // Ошибка обработки.
+    FAILED = 4;
+  }
+}
+
+// Ping -- проверка активности.
+message Ping {
+  uint64 timestamp_ms = 1;
+}
+
+// Pong -- ответ на Ping.
+message Pong {
+  uint64 echo_timestamp_ms = 1;
+  uint64 server_timestamp_ms = 2;
+}

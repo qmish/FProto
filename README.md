@@ -1,87 +1,87 @@
 # FProto
 
-Transport-agnostic, cryptographically secure messaging protocol with native Apache Kafka integration.
+Транспортно-независимый, криптографически защищённый протокол обмена сообщениями с нативной интеграцией Apache Kafka.
 
-## Purpose
+## Назначение
 
-FProto is a modular communication protocol designed primarily for a messenger application, but engineered for reuse across diverse distributed systems: IoT telemetry, financial transactions, real-time multiplayer games, and notification platforms.
+FProto -- модульный коммуникационный протокол, разработанный для мессенджера, но спроектированный для переиспользования в различных распределённых системах: IoT-телеметрия, финансовые транзакции, многопользовательские игры в реальном времени, платформы уведомлений.
 
-The protocol provides a complete stack -- from transport framing to end-to-end encryption -- decoupled from any specific business logic.
+Протокол предоставляет полный стек -- от транспортного фрейминга до сквозного шифрования -- полностью отделённый от бизнес-логики.
 
-## Core Principles
+## Основные принципы
 
-- **Transport Independence** -- single protocol over WebSocket, QUIC, gRPC, TCP, or SCTP
-- **Security by Default** -- Noise Protocol Framework (XX pattern), X25519, ChaCha20-Poly1305, Sender Keys for group E2E encryption
-- **Kafka-Native** -- messages map naturally to Kafka topics with ordering guarantees, idempotency, and offline sync
-- **Modularity** -- loosely coupled layers (transport, session, crypto, application) that can be replaced or extended independently
-- **Observability** -- built-in OpenTelemetry tracing, structured logs, Prometheus metrics
+- **Транспортная независимость** -- единый протокол поверх WebSocket, QUIC, gRPC, TCP или SCTP
+- **Безопасность по умолчанию** -- Noise Protocol Framework (паттерн XX), X25519, ChaCha20-Poly1305, Sender Keys для группового E2E-шифрования
+- **Нативная интеграция с Kafka** -- сообщения естественно отображаются на топики с гарантиями порядка, идемпотентностью и офлайн-синхронизацией
+- **Модульность** -- слабо связанные слои (транспорт, сессия, криптография, приложение), каждый из которых заменяем и расширяем независимо
+- **Наблюдаемость** -- встроенная трассировка OpenTelemetry, структурированные логи, метрики Prometheus
 
-## Architecture
+## Архитектура
 
 ```
 +--------------------------------------------------+
-|          Application Layer (Protobuf)             |
+|          Прикладной слой (Protobuf)               |
 |   ChatMessage | Command | MediaChunk | Ack | Ping |
 +--------------------------------------------------+
-|          Crypto Layer (Noise Framework)            |
+|          Криптографический слой (Noise)            |
 |   Noise_XX | ChaCha20-Poly1305 | X25519 | BLAKE2s |
 +--------------------------------------------------+
-|          Session Layer                             |
-|   session_id | device binding | key rotation       |
+|          Сессионный слой                           |
+|   session_id | привязка к устройству | ротация ключей |
 +--------------------------------------------------+
-|          Transport Layer                           |
+|          Транспортный слой                         |
 |   WebSocket | QUIC | gRPC streaming | TCP          |
 +--------------------------------------------------+
 ```
 
-**Server-side components:** Transport Gateway, Session Manager (Redis + PostgreSQL), Crypto Handler, Dispatcher, Kafka Cluster, Consumer Services (Sync, Notifications, Commands).
+**Серверные компоненты:** Transport Gateway, Session Manager (Redis + PostgreSQL), Crypto Handler, Dispatcher, Kafka Cluster, Consumer-сервисы (Sync, Notifications, Commands).
 
-## Key Features
+## Ключевые возможности
 
-- Three transport backends: WebSocket (browsers, mobile), QUIC (mobile, IoT), gRPC (server-to-server)
-- Noise_XX_25519_ChaChaPoly_BLAKE2s handshake with periodic key rotation
-- Sender Keys for scalable group E2E encryption
-- Outbox/Inbox pattern for guaranteed message delivery
-- Offline sync via Kafka consumer seek
-- Chunked media upload with S3-compatible storage
-- Session persistence across connection drops (device-bound sessions)
+- Три транспортных бэкенда: WebSocket (браузеры, мобильные), QUIC (мобильные, IoT), gRPC (сервер-сервер)
+- Noise_XX_25519_ChaChaPoly_BLAKE2s handshake с периодической ротацией ключей
+- Sender Keys для масштабируемого группового E2E-шифрования
+- Паттерн Outbox/Inbox для гарантированной доставки сообщений
+- Офлайн-синхронизация через Kafka consumer seek
+- Потоковая загрузка медиа с S3-совместимым хранилищем
+- Сохранение сессий при потере соединения (привязка к устройству)
 
-## Technology Stack
+## Технологический стек
 
-| Component | Technology |
+| Компонент | Технология |
 |-----------|-----------|
-| Server | Go / Rust |
-| Serialization | Protocol Buffers |
-| Crypto | Noise Protocol, X25519, ChaCha20-Poly1305, BLAKE2s |
-| Message Broker | Apache Kafka (KRaft) |
-| Session Store | Redis Cluster |
-| Persistence | PostgreSQL (sharded) |
-| Object Storage | S3 / MinIO |
-| Observability | OpenTelemetry, Prometheus, Grafana, Jaeger |
-| Client SDKs | Swift (iOS), Kotlin (Android), TypeScript (Web) |
+| Сервер | Go |
+| Сериализация | Protocol Buffers |
+| Криптография | Noise Protocol, X25519, ChaCha20-Poly1305, BLAKE2s |
+| Брокер сообщений | Apache Kafka (KRaft) |
+| Хранилище сессий | Redis Cluster |
+| Персистентность | PostgreSQL (шардированный) |
+| Объектное хранилище | S3 / MinIO |
+| Наблюдаемость | OpenTelemetry, Prometheus, Grafana, Jaeger |
+| Клиентские SDK | Swift (iOS), Kotlin (Android), TypeScript (Web) |
 
-## Documentation
+## Документация
 
-| Document | Description |
-|----------|------------|
-| [Protocol Plan](docs/План%20протокола%20Proto.md) | Original protocol specification and design rationale |
-| [Roadmap](docs/Roadmap.md) | Implementation checklist with phases, tasks, and acceptance criteria |
-| [HLD](docs/HLD.md) | High-Level Design: architecture, components, scaling and security strategies |
-| [LLD](docs/LLD.md) | Low-Level Design: Protobuf schemas, Noise handshake, DB schemas, Kafka config |
-| [Network Architecture](docs/Network-Architecture.md) | Transports, framing, load balancing, TLS, NAT traversal |
-| [Data Flows](docs/Data-Flows.md) | Sequence diagrams for all key data flows |
-| [Network Connectivity](docs/Network-Connectivity.md) | Component connectivity matrix, protocols, ports, service discovery |
-| [Infrastructure](docs/Infrastructure.md) | Kubernetes, Kafka cluster, Redis, PostgreSQL, CI/CD, monitoring |
+| Документ | Описание |
+|----------|---------|
+| [План протокола](docs/План%20протокола%20Proto.md) | Исходная спецификация и обоснование проектных решений |
+| [Дорожная карта](docs/Roadmap.md) | Чек-лист реализации с фазами, задачами и критериями приёмки |
+| [HLD](docs/HLD.md) | High-Level Design: архитектура, компоненты, стратегии масштабирования и безопасности |
+| [LLD](docs/LLD.md) | Low-Level Design: Protobuf-схемы, Noise handshake, схемы БД, конфигурация Kafka |
+| [Сетевая архитектура](docs/Network-Architecture.md) | Транспорты, фрейминг, балансировка нагрузки, TLS, NAT traversal |
+| [Потоки данных](docs/Data-Flows.md) | Sequence-диаграммы всех ключевых потоков данных |
+| [Сетевая связанность](docs/Network-Connectivity.md) | Матрица связанности компонентов, протоколы, порты, service discovery |
+| [Инфраструктура](docs/Infrastructure.md) | Kubernetes, Kafka-кластер, Redis, PostgreSQL, CI/CD, мониторинг |
 
-## Reuse Scenarios
+## Сценарии переиспользования
 
-The protocol core (transport + sessions + crypto + Kafka routing) can be adapted for:
+Ядро протокола (транспорт + сессии + криптография + маршрутизация через Kafka) может быть адаптировано для:
 
-- **IoT** -- device telemetry and control commands
-- **Finance** -- order execution, confirmations, market data streaming
-- **Gaming** -- real-time multiplayer state synchronization
-- **Notifications** -- push notification delivery platform
+- **IoT** -- телеметрия устройств и команды управления
+- **Финансы** -- исполнение ордеров, подтверждения, потоковая передача рыночных данных
+- **Игры** -- синхронизация состояния многопользовательских игр в реальном времени
+- **Уведомления** -- платформа доставки push-уведомлений
 
-## License
+## Лицензия
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+Проект распространяется по лицензии MIT. Подробности в файле [LICENSE](LICENSE).
