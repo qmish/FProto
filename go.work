@@ -7,4 +7,5 @@ use (
 	./examples/notifications
 	./proto-core
 	./server
+	./tests/conformance
 )
