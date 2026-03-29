@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -27,10 +28,20 @@ func NewProducer(brokers []string, cfg *sarama.Config) (*Producer, error) {
 }
 
 // Send publishes a message to Kafka and returns partition+offset.
+// It injects trace context from ctx into message headers.
 func (p *Producer) Send(topic string, key, value []byte) (partition int32, offset int64, err error) {
+	return p.SendWithContext(context.Background(), topic, key, value)
+}
+
+// SendWithContext publishes a message with trace context propagation.
+func (p *Producer) SendWithContext(ctx context.Context, topic string, key, value []byte) (partition int32, offset int64, err error) {
+	var headers []sarama.RecordHeader
+	InjectTraceContext(ctx, &headers)
+
 	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Value: sarama.ByteEncoder(value),
+		Topic:   topic,
+		Value:   sarama.ByteEncoder(value),
+		Headers: headers,
 	}
 	if key != nil {
 		msg.Key = sarama.ByteEncoder(key)
