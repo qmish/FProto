@@ -1,0 +1,128 @@
+package dispatcher
+
+import (
+	"testing"
+
+	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
+)
+
+func TestRouteChat_Recipient(t *testing.T) {
+	msg := &pb.AppMessage{
+		MessageId: []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
+		Body: &pb.AppMessage_Chat{
+			Chat: &pb.ChatMessage{
+				RecipientId: []byte{0xaa, 0xbb, 0xcc, 0xdd},
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "user-aabbccdd" {
+		t.Fatalf("expected user-aabbccdd, got %s", route.Topic)
+	}
+	if string(route.PartitionKey) != string([]byte{0xaa, 0xbb, 0xcc, 0xdd}) {
+		t.Fatal("partition key mismatch")
+	}
+}
+
+func TestRouteChat_Group(t *testing.T) {
+	msg := &pb.AppMessage{
+		MessageId: []byte{1, 2, 3, 4},
+		Body: &pb.AppMessage_Chat{
+			Chat: &pb.ChatMessage{
+				GroupId: []byte{0x11, 0x22},
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "group-1122" {
+		t.Fatalf("expected group-1122, got %s", route.Topic)
+	}
+}
+
+func TestRouteChat_GroupPriority(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Chat{
+			Chat: &pb.ChatMessage{
+				RecipientId: []byte{0xaa},
+				GroupId:     []byte{0xbb},
+			},
+		},
+	}
+	route, _ := RouteMessage(msg)
+	if route.Topic != "group-bb" {
+		t.Fatalf("group should take priority, got %s", route.Topic)
+	}
+}
+
+func TestRouteCommand(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Command{
+			Command: &pb.Command{
+				Type: pb.Command_CREATE_GROUP,
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "commands" {
+		t.Fatalf("expected commands, got %s", route.Topic)
+	}
+}
+
+func TestRouteAck_FallsToEvents(t *testing.T) {
+	mid := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+	msg := &pb.AppMessage{
+		MessageId: mid,
+		Body: &pb.AppMessage_Ack{
+			Ack: &pb.Ack{
+				AckMessageId: mid,
+				Status:       pb.Ack_DELIVERED,
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "events" {
+		t.Fatalf("expected events, got %s", route.Topic)
+	}
+}
+
+func TestRoutePing_FallsToEvents(t *testing.T) {
+	msg := &pb.AppMessage{
+		MessageId: []byte{1, 2, 3, 4},
+		Body:      &pb.AppMessage_Ping{Ping: &pb.Ping{}},
+	}
+	route, _ := RouteMessage(msg)
+	if route.Topic != "events" {
+		t.Fatalf("expected events, got %s", route.Topic)
+	}
+}
+
+func TestRouteNilMessage(t *testing.T) {
+	_, err := RouteMessage(nil)
+	if err == nil {
+		t.Fatal("expected error for nil message")
+	}
+}
+
+func TestRouteChatNoRecipient(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Chat{
+			Chat: &pb.ChatMessage{},
+		},
+	}
+	_, err := RouteMessage(msg)
+	if err == nil {
+		t.Fatal("expected error for chat without recipient")
+	}
+}

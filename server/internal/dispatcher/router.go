@@ -1,0 +1,66 @@
+package dispatcher
+
+import (
+	"encoding/hex"
+	"fmt"
+
+	kafkapkg "github.com/qmish/FProto/server/internal/kafka"
+	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
+)
+
+// Route determines the Kafka topic and partition key for an AppMessage.
+type Route struct {
+	Topic        string
+	PartitionKey []byte
+}
+
+// RouteMessage inspects the AppMessage body and returns the appropriate Route.
+func RouteMessage(msg *pb.AppMessage) (Route, error) {
+	if msg == nil {
+		return Route{}, fmt.Errorf("nil message")
+	}
+
+	switch body := msg.Body.(type) {
+	case *pb.AppMessage_Chat:
+		return routeChat(body.Chat)
+	case *pb.AppMessage_Command:
+		return routeCommand(body.Command)
+	default:
+		return Route{
+			Topic:        kafkapkg.TopicEvents,
+			PartitionKey: msg.MessageId,
+		}, nil
+	}
+}
+
+func routeChat(chat *pb.ChatMessage) (Route, error) {
+	if chat == nil {
+		return Route{}, fmt.Errorf("nil chat message")
+	}
+
+	if len(chat.GroupId) > 0 {
+		return Route{
+			Topic:        "group-" + hex.EncodeToString(chat.GroupId),
+			PartitionKey: chat.GroupId,
+		}, nil
+	}
+
+	if len(chat.RecipientId) > 0 {
+		return Route{
+			Topic:        "user-" + hex.EncodeToString(chat.RecipientId),
+			PartitionKey: chat.RecipientId,
+		}, nil
+	}
+
+	return Route{}, fmt.Errorf("chat message has no recipient_id or group_id")
+}
+
+func routeCommand(cmd *pb.Command) (Route, error) {
+	if cmd == nil {
+		return Route{}, fmt.Errorf("nil command")
+	}
+	return Route{
+		Topic:        kafkapkg.TopicCommands,
+		PartitionKey: []byte(cmd.Type.String()),
+	}, nil
+}
