@@ -9,17 +9,19 @@ import (
 
 // Default partition counts per topic type.
 const (
-	UserPartitions    int32 = 128
-	GroupPartitions   int32 = 64
-	CommandPartitions int32 = 32
-	EventPartitions   int32 = 64
-	DeadLetterParts   int32 = 8
+	UserPartitions       int32 = 128
+	GroupPartitions      int32 = 64
+	CommandPartitions    int32 = 32
+	EventPartitions      int32 = 64
+	MediaEventPartitions int32 = 32
+	DeadLetterParts      int32 = 8
 )
 
 const (
-	TopicCommands   = "commands"
-	TopicEvents     = "events"
-	TopicDeadLetter = "dead-letter"
+	TopicCommands    = "commands"
+	TopicEvents      = "events"
+	TopicMediaEvents = "media-events"
+	TopicDeadLetter  = "dead-letter"
 )
 
 // UserTopic returns the topic name for a specific user.
@@ -45,6 +47,7 @@ func StaticTopics(replicas int16) []TopicSpec {
 	return []TopicSpec{
 		{Name: TopicCommands, Partitions: CommandPartitions, Replicas: replicas, Retention: "604800000"},
 		{Name: TopicEvents, Partitions: EventPartitions, Replicas: replicas, Retention: "7776000000"},
+		{Name: TopicMediaEvents, Partitions: MediaEventPartitions, Replicas: replicas, Retention: "2592000000"},
 		{Name: TopicDeadLetter, Partitions: DeadLetterParts, Replicas: replicas, Retention: "7776000000"},
 	}
 }

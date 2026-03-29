@@ -101,14 +101,14 @@ func TestGroupTopic(t *testing.T) {
 
 func TestStaticTopics(t *testing.T) {
 	specs := StaticTopics(1)
-	if len(specs) != 3 {
-		t.Fatalf("expected 3 static topics, got %d", len(specs))
+	if len(specs) != 4 {
+		t.Fatalf("expected 4 static topics, got %d", len(specs))
 	}
 	names := map[string]bool{}
 	for _, s := range specs {
 		names[s.Name] = true
 	}
-	for _, name := range []string{TopicCommands, TopicEvents, TopicDeadLetter} {
+	for _, name := range []string{TopicCommands, TopicEvents, TopicMediaEvents, TopicDeadLetter} {
 		if !names[name] {
 			t.Fatalf("missing topic: %s", name)
 		}

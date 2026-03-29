@@ -25,6 +25,10 @@ func RouteMessage(msg *pb.AppMessage) (Route, error) {
 		return routeChat(body.Chat)
 	case *pb.AppMessage_Command:
 		return routeCommand(body.Command)
+	case *pb.AppMessage_Media:
+		return routeMedia(body.Media)
+	case *pb.AppMessage_SenderKey:
+		return routeSenderKey(body.SenderKey)
 	default:
 		return Route{
 			Topic:        kafkapkg.TopicEvents,
@@ -62,5 +66,28 @@ func routeCommand(cmd *pb.Command) (Route, error) {
 	return Route{
 		Topic:        kafkapkg.TopicCommands,
 		PartitionKey: []byte(cmd.Type.String()),
+	}, nil
+}
+
+func routeMedia(media *pb.MediaChunk) (Route, error) {
+	if media == nil {
+		return Route{}, fmt.Errorf("nil media chunk")
+	}
+	return Route{
+		Topic:        kafkapkg.TopicMediaEvents,
+		PartitionKey: media.StreamId,
+	}, nil
+}
+
+func routeSenderKey(sk *pb.SenderKeyDistribution) (Route, error) {
+	if sk == nil {
+		return Route{}, fmt.Errorf("nil sender key distribution")
+	}
+	if len(sk.SenderId) == 0 {
+		return Route{}, fmt.Errorf("sender key has no sender_id")
+	}
+	return Route{
+		Topic:        kafkapkg.TopicEvents,
+		PartitionKey: sk.GroupId,
 	}, nil
 }

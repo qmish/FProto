@@ -126,3 +126,64 @@ func TestRouteChatNoRecipient(t *testing.T) {
 		t.Fatal("expected error for chat without recipient")
 	}
 }
+
+func TestRouteMedia(t *testing.T) {
+	msg := &pb.AppMessage{
+		MessageId: []byte{1, 2, 3, 4},
+		Body: &pb.AppMessage_Media{
+			Media: &pb.MediaChunk{
+				StreamId:   []byte{0xaa, 0xbb, 0xcc},
+				ChunkIndex: 0,
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "media-events" {
+		t.Fatalf("expected media-events, got %s", route.Topic)
+	}
+}
+
+func TestRouteSenderKey(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_SenderKey{
+			SenderKey: &pb.SenderKeyDistribution{
+				GroupId:  []byte{0x11, 0x22},
+				SenderId: []byte{0xcc, 0xdd},
+			},
+		},
+	}
+	route, err := RouteMessage(msg)
+	if err != nil {
+		t.Fatalf("route: %v", err)
+	}
+	if route.Topic != "events" {
+		t.Fatalf("expected events, got %s", route.Topic)
+	}
+}
+
+func TestRouteMediaNil(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_Media{Media: nil},
+	}
+	_, err := RouteMessage(msg)
+	if err == nil {
+		t.Fatal("expected error for nil media")
+	}
+}
+
+func TestRouteSenderKeyNoSender(t *testing.T) {
+	msg := &pb.AppMessage{
+		Body: &pb.AppMessage_SenderKey{
+			SenderKey: &pb.SenderKeyDistribution{
+				GroupId: []byte{0x11},
+			},
+		},
+	}
+	_, err := RouteMessage(msg)
+	if err == nil {
+		t.Fatal("expected error for sender key without sender_id")
+	}
+}
