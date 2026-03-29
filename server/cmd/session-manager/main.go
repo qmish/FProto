@@ -3,45 +3,78 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
+	"github.com/qmish/FProto/proto-core/observability"
+	"github.com/qmish/FProto/proto-core/session"
 	pb "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1"
-	"github.com/qmish/FProto/server/internal/session"
+	"github.com/qmish/FProto/server/internal/sessiongrpc"
 )
 
 func main() {
 	addr := flag.String("addr", ":50051", "gRPC listen address")
+	metricsAddr := flag.String("metrics", ":9091", "Prometheus metrics address")
 	redisAddr := flag.String("redis", "localhost:6379", "Redis address")
 	pgDSN := flag.String("pg", "postgres://fproto:fproto_dev@localhost:5432/fproto?sslmode=disable", "PostgreSQL DSN")
+	otlpEndpoint := flag.String("otlp", "localhost:4317", "OTLP gRPC endpoint")
 	flag.Parse()
+
+	logger, err := observability.NewLogger("session-manager")
+	if err != nil {
+		panic("logger init: " + err.Error())
+	}
+	defer func() { _ = logger.Sync() }()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	shutdownTracer, err := observability.InitTracer(ctx, "session-manager", "0.5.0", *otlpEndpoint)
+	if err != nil {
+		logger.Warn("Tracing init failed, continuing without traces", zap.Error(err))
+	} else {
+		defer func() { _ = shutdownTracer(ctx) }()
+	}
+
+	mp, metricsHandler, err := observability.InitMeter()
+	if err != nil {
+		logger.Fatal("Metrics init failed", zap.Error(err))
+	}
+	defer func() { _ = mp.Shutdown(ctx) }()
+
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", metricsHandler)
+		logger.Info("Metrics endpoint", zap.String("addr", *metricsAddr))
+		if err := http.ListenAndServe(*metricsAddr, mux); err != nil {
+			logger.Error("Metrics server error", zap.Error(err))
+		}
+	}()
+
 	rdb := redis.NewClient(&redis.Options{Addr: *redisAddr})
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Fatalf("Redis connection failed: %v", err)
+		logger.Fatal("Redis connection failed", zap.Error(err))
 	}
-	log.Printf("Подключено к Redis: %s", *redisAddr)
+	logger.Info("Подключено к Redis", zap.String("addr", *redisAddr))
 
 	pool, err := pgxpool.New(ctx, *pgDSN)
 	if err != nil {
-		log.Fatalf("PostgreSQL connection failed: %v", err)
+		logger.Fatal("PostgreSQL connection failed", zap.Error(err))
 	}
 	defer pool.Close()
-	log.Printf("Подключено к PostgreSQL")
+	logger.Info("Подключено к PostgreSQL")
 
 	pgStore := session.NewPGStore(pool)
 	if err := pgStore.Migrate(ctx); err != nil {
-		log.Fatalf("Migration failed: %v", err)
+		logger.Fatal("Migration failed", zap.Error(err))
 	}
 
 	redisStore := session.NewRedisStore(rdb, 0)
@@ -49,23 +82,23 @@ func main() {
 
 	lis, err := net.Listen("tcp", *addr)
 	if err != nil {
-		log.Fatalf("Listen failed: %v", err)
+		logger.Fatal("Listen failed", zap.Error(err))
 	}
 
-	srv := grpc.NewServer()
-	pb.RegisterSessionServiceServer(srv, session.NewGRPCServer(mgr))
+	srv := grpc.NewServer(observability.GRPCServerOptions(logger)...)
+	pb.RegisterSessionServiceServer(srv, sessiongrpc.NewServer(mgr))
 
 	go func() {
 		sigCh := make(chan os.Signal, 1)
 		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 		<-sigCh
-		log.Println("Завершение работы...")
+		logger.Info("Завершение работы...")
 		srv.GracefulStop()
 		cancel()
 	}()
 
-	log.Printf("Session Manager запущен на %s", *addr)
+	logger.Info("Session Manager запущен", zap.String("addr", *addr))
 	if err := srv.Serve(lis); err != nil {
-		log.Fatalf("gRPC serve: %v", err)
+		logger.Fatal("gRPC serve error", zap.Error(err))
 	}
 }

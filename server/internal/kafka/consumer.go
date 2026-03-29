@@ -6,6 +6,10 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 // MessageHandler processes a single Kafka message.
@@ -83,14 +87,29 @@ func (h *consumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (h *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (h *consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for msg := range claim.Messages() {
+		ctx := ExtractTraceContext(sess.Context(), msg.Headers)
+
+		tracer := otel.Tracer("kafka.consumer")
+		_, span := tracer.Start(ctx, "kafka.consume",
+			oteltrace.WithAttributes(
+				attribute.String("kafka.topic", msg.Topic),
+				attribute.Int64("kafka.partition", int64(msg.Partition)),
+				attribute.Int64("kafka.offset", msg.Offset),
+			),
+		)
+
 		if err := h.handler(msg); err != nil {
+			span.RecordError(err)
+			span.SetStatus(otelcodes.Error, err.Error())
 			log.Printf("message handler error (topic=%s, partition=%d, offset=%d): %v",
 				msg.Topic, msg.Partition, msg.Offset, err)
+			span.End()
 			continue
 		}
-		session.MarkMessage(msg, "")
+		span.End()
+		sess.MarkMessage(msg, "")
 	}
 	return nil
 }

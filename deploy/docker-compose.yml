@@ -78,6 +78,51 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - jaeger
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
   session-manager:
     build:
       context: ../server
@@ -92,7 +137,7 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
-    command: ["/app/session-manager", "-redis", "redis:6379", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable"]
+    command: ["/app/session-manager", "-redis", "redis:6379", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-otlp", "jaeger:4317", "-metrics", ":9091"]
 
   crypto-handler:
     build:
@@ -100,7 +145,7 @@ services:
       dockerfile: ../deploy/Dockerfile.crypto-handler
     ports:
       - "50052:50052"
-    command: ["/app/crypto-handler", "-addr", ":50052"]
+    command: ["/app/crypto-handler", "-addr", ":50052", "-otlp", "jaeger:4317", "-metrics", ":9092"]
 
   gateway:
     build:
@@ -113,7 +158,7 @@ services:
       - session-manager
       - crypto-handler
       - dispatcher
-    command: ["/app/gateway", "-ws-addr", ":8080", "-quic-addr", ":8443", "-dispatcher", "dispatcher:50053"]
+    command: ["/app/gateway", "-ws-addr", ":8080", "-quic-addr", ":8443", "-dispatcher", "dispatcher:50053", "-otlp", "jaeger:4317", "-metrics", ":9090"]
 
   dispatcher:
     build:
@@ -129,7 +174,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    command: ["/app/dispatcher", "-addr", ":50053", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092"]
+    command: ["/app/dispatcher", "-addr", ":50053", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-otlp", "jaeger:4317", "-metrics", ":9093"]
 
   sync-service:
     build:
@@ -148,7 +193,7 @@ services:
         condition: service_healthy
       session-manager:
         condition: service_started
-    command: ["/app/sync-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-redis", "redis:6379", "-push", "session-manager:50051"]
+    command: ["/app/sync-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-redis", "redis:6379", "-push", "session-manager:50051", "-otlp", "jaeger:4317", "-metrics", ":9095"]
 
   media-service:
     build:
@@ -166,7 +211,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-    command: ["/app/media-service", "-addr", ":50054", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-minio", "minio:9000", "-minio-access", "minioadmin", "-minio-secret", "minioadmin"]
+    command: ["/app/media-service", "-addr", ":50054", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-minio", "minio:9000", "-minio-access", "minioadmin", "-minio-secret", "minioadmin", "-otlp", "jaeger:4317", "-metrics", ":9094"]
 
   command-service:
     build:
@@ -180,10 +225,13 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    command: ["/app/command-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092"]
+    command: ["/app/command-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-otlp", "jaeger:4317", "-metrics", ":9096"]
 
 volumes:
   redis-data:
   pg-data:
   kafka-data:
   minio-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:

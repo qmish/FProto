@@ -7,13 +7,28 @@ option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-// SessionService -- gRPC API управления сессиями (LLD §7.1).
+// SessionService -- gRPC API управления сессиями пользователей.
+// Сервис обеспечивает создание, получение и управление жизненным циклом сессий,
+// регистрацию/отключение транспортных соединений, маршрутизацию сообщений к сессии.
+// Хранилище: Redis (горячий кэш) + PostgreSQL (долговременное хранение).
+// См. LLD §7.1 для деталей.
 service SessionService {
+  // Создаёт новую сессию для пары (user_id, device_id). Возвращает session_id.
   rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+
+  // Возвращает текущее состояние сессии по session_id.
   rpc GetSession(GetSessionRequest) returns (Session);
+
+  // Обновляет статус сессии (CONNECTING -> ACTIVE -> SLEEPING -> EXPIRED).
   rpc UpdateSessionStatus(UpdateStatusRequest) returns (Session);
+
+  // Регистрирует новое транспортное соединение (WS/QUIC/gRPC) в рамках сессии.
   rpc RegisterConnection(RegisterConnectionRequest) returns (RegisterConnectionResponse);
+
+  // Отключает транспортное соединение от сессии.
   rpc UnregisterConnection(UnregisterConnectionRequest) returns (google.protobuf.Empty);
+
+  // Маршрутизирует payload к лучшему активному соединению сессии.
   rpc RouteToSession(RouteRequest) returns (RouteResponse);
 }
 

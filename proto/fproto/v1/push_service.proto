@@ -6,9 +6,14 @@ option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto
 
 import "fproto/v1/app_message.proto";
 
-// PushService -- gRPC API доставки сообщений клиентам (LLD §7.4).
+// PushService -- gRPC API доставки сообщений онлайн-клиентам.
+// Вызывается SyncService после получения сообщения из Kafka.
+// Доставляет через активные соединения (WS/QUIC). См. LLD §7.4.
 service PushService {
+  // Доставляет сообщение всем активным сессиям пользователя.
   rpc PushToUser(PushToUserRequest) returns (PushResponse);
+
+  // Доставляет сообщение конкретной сессии.
   rpc PushToSession(PushToSessionRequest) returns (PushResponse);
 }
 
