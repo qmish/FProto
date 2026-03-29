@@ -236,35 +236,35 @@ gantt
 
 ### 4.1 Tracing и метрики
 
-- [ ] **T-4.1.1** Интеграция OpenTelemetry SDK (traces): span на каждый этап обработки сообщения
-- [ ] **T-4.1.2** Метрики: messages_sent/received (counter), handshake_duration (histogram), active_sessions (gauge), kafka_lag (gauge)
-- [ ] **T-4.1.3** Экспорт в Prometheus + визуализация в Grafana (dashboards)
-- [ ] **T-4.1.4** Distributed tracing: Jaeger, trace_id propagation через Kafka headers
-- [ ] **T-4.1.5** Структурированные логи (JSON): correlation с trace_id
+- [x] **T-4.1.1** Интеграция OpenTelemetry SDK (traces): span на каждый этап обработки сообщения
+- [x] **T-4.1.2** Метрики: messages_sent/received (counter), handshake_duration (histogram), active_sessions (gauge), kafka_lag (gauge)
+- [x] **T-4.1.3** Экспорт в Prometheus + визуализация в Grafana (dashboards)
+- [x] **T-4.1.4** Distributed tracing: Jaeger, trace_id propagation через Kafka headers
+- [x] **T-4.1.5** Структурированные логи (JSON): correlation с trace_id
 
 ### 4.2 Нагрузочное тестирование
 
-- [ ] **T-4.2.1** Сценарии k6/JMeter: 10K, 50K, 100K concurrent connections
-- [ ] **T-4.2.2** Бенчмарк throughput: сообщений/сек при различных размерах payload (100B, 1KB, 10KB)
-- [ ] **T-4.2.3** Бенчмарк latency: p50, p95, p99 end-to-end (отправитель -> получатель)
-- [ ] **T-4.2.4** Бенчмарк Kafka: throughput при различном количестве партиций и consumers
-- [ ] **T-4.2.5** Профилирование: CPU, memory, GC pauses (pprof / perf)
-- [ ] **T-4.2.6** Отчёт о производительности с рекомендациями
+- [x] **T-4.2.1** Сценарии k6/JMeter: 10K, 50K, 100K concurrent connections
+- [x] **T-4.2.2** Бенчмарк throughput: сообщений/сек при различных размерах payload (100B, 1KB, 10KB)
+- [x] **T-4.2.3** Бенчмарк latency: p50, p95, p99 end-to-end (отправитель -> получатель)
+- [x] **T-4.2.4** Бенчмарк Kafka: throughput при различном количестве партиций и consumers
+- [x] **T-4.2.5** Профилирование: CPU, memory, GC pauses (pprof / perf)
+- [x] **T-4.2.6** Отчёт о производительности с рекомендациями
 
 ### 4.3 Chaos Engineering
 
-- [ ] **T-4.3.1** Тест: crash Kafka-брокера -- сообщения не теряются (Outbox retry)
-- [ ] **T-4.3.2** Тест: Redis unavailable -- graceful degradation, session recovery из PostgreSQL
-- [ ] **T-4.3.3** Тест: network partition между Gateway и Kafka
-- [ ] **T-4.3.4** Тест: высокая latency (tc netem) -- backpressure, корректная работа reconnect
-- [ ] **T-4.3.5** Тест: rolling update серверов -- zero-downtime, сессии сохраняются
+- [x] **T-4.3.1** Тест: crash Kafka-брокера -- сообщения не теряются (Outbox retry)
+- [x] **T-4.3.2** Тест: Redis unavailable -- graceful degradation, session recovery из PostgreSQL
+- [x] **T-4.3.3** Тест: network partition между Gateway и Kafka
+- [x] **T-4.3.4** Тест: высокая latency (tc netem) -- backpressure, корректная работа reconnect
+- [x] **T-4.3.5** Тест: rolling update серверов -- zero-downtime, сессии сохраняются
 
 ### 4.4 Документация API
 
-- [ ] **T-4.4.1** gRPC service definitions с комментариями (buf.build)
-- [ ] **T-4.4.2** Protobuf documentation generation
-- [ ] **T-4.4.3** Руководство по интеграции для разработчиков
-- [ ] **T-4.4.4** Примеры использования SDK (quickstart для каждой платформы)
+- [x] **T-4.4.1** gRPC service definitions с комментариями (buf.build)
+- [x] **T-4.4.2** Protobuf documentation generation
+- [x] **T-4.4.3** Руководство по интеграции для разработчиков
+- [x] **T-4.4.4** Примеры использования SDK (quickstart для каждой платформы)
 
 **Критерии приёмки Фазы 4:**
 - Dashboards в Grafana показывают ключевые метрики в реальном времени
