@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+// MediaService -- gRPC API для управления загрузкой/скачиванием медиафайлов (LLD §7.5).
+service MediaService {
+  rpc InitUpload(InitUploadRequest) returns (InitUploadResponse);
+  rpc CompleteUpload(CompleteUploadRequest) returns (CompleteUploadResponse);
+  rpc GetDownloadURL(GetDownloadURLRequest) returns (GetDownloadURLResponse);
+}
+
+message InitUploadRequest {
+  bytes user_id = 1;
+  string mime_type = 2;
+  uint64 total_size = 3;
+  bytes file_hash = 4; // SHA-256
+}
+
+message InitUploadResponse {
+  bytes stream_id = 1;
+  string presigned_upload_url = 2;
+  int64 expires_at = 3; // unix timestamp
+}
+
+message CompleteUploadRequest {
+  bytes stream_id = 1;
+  bytes file_hash = 2; // SHA-256 for verification
+}
+
+message CompleteUploadResponse {
+  bool success = 1;
+  string download_url = 2;
+}
+
+message GetDownloadURLRequest {
+  bytes stream_id = 1;
+}
+
+message GetDownloadURLResponse {
+  string presigned_download_url = 1;
+  int64 expires_at = 2;
+}
