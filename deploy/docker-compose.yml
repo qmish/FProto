@@ -78,6 +78,110 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
 
+  session-manager:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.session-manager
+    ports:
+      - "50051:50051"
+    environment:
+      REDIS_ADDR: redis:6379
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: ["/app/session-manager", "-redis", "redis:6379", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable"]
+
+  crypto-handler:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.crypto-handler
+    ports:
+      - "50052:50052"
+    command: ["/app/crypto-handler", "-addr", ":50052"]
+
+  gateway:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.gateway
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    depends_on:
+      - session-manager
+      - crypto-handler
+      - dispatcher
+    command: ["/app/gateway", "-ws-addr", ":8080", "-quic-addr", ":8443", "-dispatcher", "dispatcher:50053"]
+
+  dispatcher:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.dispatcher
+    ports:
+      - "50053:50053"
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    command: ["/app/dispatcher", "-addr", ":50053", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092"]
+
+  sync-service:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.sync-service
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      REDIS_ADDR: redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      session-manager:
+        condition: service_started
+    command: ["/app/sync-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092", "-redis", "redis:6379", "-push", "session-manager:50051"]
+
+  media-service:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.media-service
+    ports:
+      - "50054:50054"
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS: minioadmin
+      MINIO_SECRET: minioadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command: ["/app/media-service", "-addr", ":50054", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-minio", "minio:9000", "-minio-access", "minioadmin", "-minio-secret", "minioadmin"]
+
+  command-service:
+    build:
+      context: ../server
+      dockerfile: ../deploy/Dockerfile.command-service
+    environment:
+      PG_DSN: postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    command: ["/app/command-service", "-pg", "postgres://fproto:fproto_dev@postgres:5432/fproto?sslmode=disable", "-kafka", "kafka:9092"]
+
 volumes:
   redis-data:
   pg-data:

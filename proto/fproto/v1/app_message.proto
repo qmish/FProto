@@ -10,6 +10,7 @@ import "fproto/v1/command.proto";
 import "fproto/v1/media.proto";
 import "fproto/v1/ack.proto";
 import "fproto/v1/sync.proto";
+import "fproto/v1/signaling.proto";
 
 // AppMessage -- прикладное сообщение, передаваемое внутри Frame.encrypted_payload.
 message AppMessage {
@@ -28,5 +29,6 @@ message AppMessage {
     Pong pong = 8;
     SenderKeyDistribution sender_key = 9;
     SyncRequest sync_request = 10;
+    SignalingMessage signaling = 11;
   }
 }

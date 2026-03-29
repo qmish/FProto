@@ -39,6 +39,7 @@ type AppMessage struct {
 	//	*AppMessage_Pong
 	//	*AppMessage_SenderKey
 	//	*AppMessage_SyncRequest
+	//	*AppMessage_Signaling
 	Body          isAppMessage_Body `protobuf_oneof:"body"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -167,6 +168,15 @@ func (x *AppMessage) GetSyncRequest() *SyncRequest {
 	return nil
 }
 
+func (x *AppMessage) GetSignaling() *SignalingMessage {
+	if x != nil {
+		if x, ok := x.Body.(*AppMessage_Signaling); ok {
+			return x.Signaling
+		}
+	}
+	return nil
+}
+
 type isAppMessage_Body interface {
 	isAppMessage_Body()
 }
@@ -203,6 +213,10 @@ type AppMessage_SyncRequest struct {
 	SyncRequest *SyncRequest `protobuf:"bytes,10,opt,name=sync_request,json=syncRequest,proto3,oneof"`
 }
 
+type AppMessage_Signaling struct {
+	Signaling *SignalingMessage `protobuf:"bytes,11,opt,name=signaling,proto3,oneof"`
+}
+
 func (*AppMessage_Chat) isAppMessage_Body() {}
 
 func (*AppMessage_Command) isAppMessage_Body() {}
@@ -219,11 +233,13 @@ func (*AppMessage_SenderKey) isAppMessage_Body() {}
 
 func (*AppMessage_SyncRequest) isAppMessage_Body() {}
 
+func (*AppMessage_Signaling) isAppMessage_Body() {}
+
 var File_fproto_v1_app_message_proto protoreflect.FileDescriptor
 
 const file_fproto_v1_app_message_proto_rawDesc = "" +
 	"\n" +
-	"\x1bfproto/v1/app_message.proto\x12\tfproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x14fproto/v1/chat.proto\x1a\x17fproto/v1/command.proto\x1a\x15fproto/v1/media.proto\x1a\x13fproto/v1/ack.proto\x1a\x14fproto/v1/sync.proto\"\xec\x03\n" +
+	"\x1bfproto/v1/app_message.proto\x12\tfproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x14fproto/v1/chat.proto\x1a\x17fproto/v1/command.proto\x1a\x15fproto/v1/media.proto\x1a\x13fproto/v1/ack.proto\x1a\x14fproto/v1/sync.proto\x1a\x19fproto/v1/signaling.proto\"\xa9\x04\n" +
 	"\n" +
 	"AppMessage\x12\x1d\n" +
 	"\n" +
@@ -238,7 +254,8 @@ const file_fproto_v1_app_message_proto_rawDesc = "" +
 	"\n" +
 	"sender_key\x18\t \x01(\v2 .fproto.v1.SenderKeyDistributionH\x00R\tsenderKey\x12;\n" +
 	"\fsync_request\x18\n" +
-	" \x01(\v2\x16.fproto.v1.SyncRequestH\x00R\vsyncRequestB\x06\n" +
+	" \x01(\v2\x16.fproto.v1.SyncRequestH\x00R\vsyncRequest\x12;\n" +
+	"\tsignaling\x18\v \x01(\v2\x1b.fproto.v1.SignalingMessageH\x00R\tsignalingB\x06\n" +
 	"\x04bodyB@Z>github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1b\x06proto3"
 
 var (
@@ -265,22 +282,24 @@ var file_fproto_v1_app_message_proto_goTypes = []any{
 	(*Pong)(nil),                  // 7: fproto.v1.Pong
 	(*SenderKeyDistribution)(nil), // 8: fproto.v1.SenderKeyDistribution
 	(*SyncRequest)(nil),           // 9: fproto.v1.SyncRequest
+	(*SignalingMessage)(nil),      // 10: fproto.v1.SignalingMessage
 }
 var file_fproto_v1_app_message_proto_depIdxs = []int32{
-	1, // 0: fproto.v1.AppMessage.timestamp:type_name -> google.protobuf.Timestamp
-	2, // 1: fproto.v1.AppMessage.chat:type_name -> fproto.v1.ChatMessage
-	3, // 2: fproto.v1.AppMessage.command:type_name -> fproto.v1.Command
-	4, // 3: fproto.v1.AppMessage.media:type_name -> fproto.v1.MediaChunk
-	5, // 4: fproto.v1.AppMessage.ack:type_name -> fproto.v1.Ack
-	6, // 5: fproto.v1.AppMessage.ping:type_name -> fproto.v1.Ping
-	7, // 6: fproto.v1.AppMessage.pong:type_name -> fproto.v1.Pong
-	8, // 7: fproto.v1.AppMessage.sender_key:type_name -> fproto.v1.SenderKeyDistribution
-	9, // 8: fproto.v1.AppMessage.sync_request:type_name -> fproto.v1.SyncRequest
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	1,  // 0: fproto.v1.AppMessage.timestamp:type_name -> google.protobuf.Timestamp
+	2,  // 1: fproto.v1.AppMessage.chat:type_name -> fproto.v1.ChatMessage
+	3,  // 2: fproto.v1.AppMessage.command:type_name -> fproto.v1.Command
+	4,  // 3: fproto.v1.AppMessage.media:type_name -> fproto.v1.MediaChunk
+	5,  // 4: fproto.v1.AppMessage.ack:type_name -> fproto.v1.Ack
+	6,  // 5: fproto.v1.AppMessage.ping:type_name -> fproto.v1.Ping
+	7,  // 6: fproto.v1.AppMessage.pong:type_name -> fproto.v1.Pong
+	8,  // 7: fproto.v1.AppMessage.sender_key:type_name -> fproto.v1.SenderKeyDistribution
+	9,  // 8: fproto.v1.AppMessage.sync_request:type_name -> fproto.v1.SyncRequest
+	10, // 9: fproto.v1.AppMessage.signaling:type_name -> fproto.v1.SignalingMessage
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_fproto_v1_app_message_proto_init() }
@@ -293,6 +312,7 @@ func file_fproto_v1_app_message_proto_init() {
 	file_fproto_v1_media_proto_init()
 	file_fproto_v1_ack_proto_init()
 	file_fproto_v1_sync_proto_init()
+	file_fproto_v1_signaling_proto_init()
 	file_fproto_v1_app_message_proto_msgTypes[0].OneofWrappers = []any{
 		(*AppMessage_Chat)(nil),
 		(*AppMessage_Command)(nil),
@@ -302,6 +322,7 @@ func file_fproto_v1_app_message_proto_init() {
 		(*AppMessage_Pong)(nil),
 		(*AppMessage_SenderKey)(nil),
 		(*AppMessage_SyncRequest)(nil),
+		(*AppMessage_Signaling)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

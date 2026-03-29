@@ -1,0 +1,11 @@
+FROM golang:1.23-alpine AS builder
+WORKDIR /build
+COPY server/go.mod server/go.sum ./
+RUN go mod download
+COPY server/ .
+RUN CGO_ENABLED=0 go build -o /app/session-manager ./cmd/session-manager/
+
+FROM alpine:3.19
+RUN apk --no-cache add ca-certificates
+COPY --from=builder /app/session-manager /app/session-manager
+ENTRYPOINT ["/app/session-manager"]

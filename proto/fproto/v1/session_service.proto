@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// SessionService -- gRPC API управления сессиями (LLD §7.1).
+service SessionService {
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc GetSession(GetSessionRequest) returns (Session);
+  rpc UpdateSessionStatus(UpdateStatusRequest) returns (Session);
+  rpc RegisterConnection(RegisterConnectionRequest) returns (RegisterConnectionResponse);
+  rpc UnregisterConnection(UnregisterConnectionRequest) returns (google.protobuf.Empty);
+  rpc RouteToSession(RouteRequest) returns (RouteResponse);
+}
+
+message CreateSessionRequest {
+  bytes user_id = 1;
+  bytes device_id = 2;
+}
+
+message CreateSessionResponse {
+  bytes session_id = 1;
+  Session session = 2;
+}
+
+message GetSessionRequest {
+  bytes session_id = 1;
+}
+
+message UpdateStatusRequest {
+  bytes session_id = 1;
+  SessionStatus status = 2;
+}
+
+message RegisterConnectionRequest {
+  bytes session_id = 1;
+  string connection_id = 2;
+  TransportType transport = 3;
+  string gateway_id = 4;
+  string remote_addr = 5;
+}
+
+message RegisterConnectionResponse {
+  uint32 active_connections = 1;
+}
+
+message UnregisterConnectionRequest {
+  bytes session_id = 1;
+  string connection_id = 2;
+}
+
+message RouteRequest {
+  bytes session_id = 1;
+  bytes payload = 2;
+}
+
+message RouteResponse {
+  bool delivered = 1;
+  string connection_id = 2;
+  TransportType transport = 3;
+}
+
+// Session -- полное представление сессии.
+message Session {
+  bytes session_id = 1;
+  bytes user_id = 2;
+  bytes device_id = 3;
+  SessionStatus status = 4;
+  bytes crypto_state = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp last_active = 7;
+  google.protobuf.Timestamp expires_at = 8;
+  repeated Connection connections = 9;
+}
+
+// Connection -- активное транспортное соединение в рамках сессии.
+message Connection {
+  string connection_id = 1;
+  TransportType transport = 2;
+  string gateway_id = 3;
+  string remote_addr = 4;
+  google.protobuf.Timestamp connected_at = 5;
+  uint64 last_packet_seq = 6;
+}
+
+enum SessionStatus {
+  SESSION_STATUS_UNSPECIFIED = 0;
+  CONNECTING = 1;
+  ACTIVE = 2;
+  SLEEPING = 3;
+  EXPIRED = 4;
+}
+
+enum TransportType {
+  TRANSPORT_TYPE_UNSPECIFIED = 0;
+  WEBSOCKET = 1;
+  QUIC = 2;
+  GRPC = 3;
+}

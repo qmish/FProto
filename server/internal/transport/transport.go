@@ -1,7 +1,16 @@
 package transport
 
+// Type identifies the transport protocol.
+type Type string
+
+const (
+	TypeWebSocket Type = "websocket"
+	TypeQUIC      Type = "quic"
+	TypeGRPC      Type = "grpc"
+)
+
 // Conn абстрагирует транспортное соединение.
-// Реализации: WebSocket, QUIC (будущее), gRPC (будущее).
+// Реализации: WebSocket, QUIC, gRPC streaming.
 type Conn interface {
 	// ReadMessage читает следующее бинарное сообщение из соединения.
 	ReadMessage() ([]byte, error)
@@ -11,4 +20,10 @@ type Conn interface {
 
 	// Close закрывает соединение.
 	Close() error
+
+	// Type возвращает тип транспорта.
+	Type() Type
+
+	// RemoteAddr возвращает адрес удалённой стороны.
+	RemoteAddr() string
 }

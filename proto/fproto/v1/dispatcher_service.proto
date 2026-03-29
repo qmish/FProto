@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package fproto.v1;
+
+option go_package = "github.com/qmish/FProto/server/internal/protocol/gen/fproto/v1";
+
+import "fproto/v1/app_message.proto";
+
+// DispatcherService -- gRPC API маршрутизации сообщений в Kafka (LLD §7.3).
+service DispatcherService {
+  rpc Dispatch(DispatchRequest) returns (DispatchResponse);
+}
+
+message DispatchRequest {
+  bytes session_id = 1;
+  bytes sender_id = 2;
+  AppMessage message = 3;
+}
+
+message DispatchResponse {
+  bool success = 1;
+  bytes ack_message_id = 2;
+}

@@ -43,29 +43,29 @@ gantt
 
 ### 0.1 Инфраструктура разработки
 
-- [ ] **T-0.1.1** Выбор языка серверной части (Go vs Rust) -- провести сравнительный анализ по критериям: экосистема Noise/Kafka/QUIC, производительность, скорость разработки
-- [ ] **T-0.1.2** Выбор языков клиентских SDK (Swift / Kotlin / TypeScript) -- зафиксировать в ADR
-- [ ] **T-0.1.3** Инициализация монорепозитория -- структура каталогов: `proto/`, `server/`, `sdk/`, `docs/`, `deploy/`
-- [ ] **T-0.1.4** Настройка CI pipeline (GitHub Actions / GitLab CI) -- линтинг, сборка, юнит-тесты
-- [ ] **T-0.1.5** Настройка линтеров и форматтеров (golangci-lint / clippy, protolint)
-- [ ] **T-0.1.6** Создание dev-окружения (Docker Compose): Redis, PostgreSQL, Kafka (single-node), MinIO
+- [x] **T-0.1.1** Выбор языка серверной части (Go vs Rust) -- провести сравнительный анализ по критериям: экосистема Noise/Kafka/QUIC, производительность, скорость разработки
+- [x] **T-0.1.2** Выбор языков клиентских SDK (Swift / Kotlin / TypeScript) -- зафиксировать в ADR
+- [x] **T-0.1.3** Инициализация монорепозитория -- структура каталогов: `proto/`, `server/`, `sdk/`, `docs/`, `deploy/`
+- [x] **T-0.1.4** Настройка CI pipeline (GitHub Actions / GitLab CI) -- линтинг, сборка, юнит-тесты
+- [x] **T-0.1.5** Настройка линтеров и форматтеров (golangci-lint / clippy, protolint)
+- [x] **T-0.1.6** Создание dev-окружения (Docker Compose): Redis, PostgreSQL, Kafka (single-node), MinIO
 
 ### 0.2 Protobuf-схемы
 
-- [ ] **T-0.2.1** Определить `Frame` (session_id, seq, ack, encrypted_payload)
-- [ ] **T-0.2.2** Определить `AppMessage` (message_id, timestamp, oneof body)
-- [ ] **T-0.2.3** Определить типы `ChatMessage`, `Command`, `MediaChunk`, `Ack`, `Ping`
-- [ ] **T-0.2.4** Настроить генерацию кода из .proto (Go, Swift, Kotlin, TypeScript)
-- [ ] **T-0.2.5** Написать валидационные тесты для сериализации/десериализации
+- [x] **T-0.2.1** Определить `Frame` (session_id, seq, ack, encrypted_payload)
+- [x] **T-0.2.2** Определить `AppMessage` (message_id, timestamp, oneof body)
+- [x] **T-0.2.3** Определить типы `ChatMessage`, `Command`, `MediaChunk`, `Ack`, `Ping`
+- [x] **T-0.2.4** Настроить генерацию кода из .proto (Go, Swift, Kotlin, TypeScript)
+- [x] **T-0.2.5** Написать валидационные тесты для сериализации/десериализации
 
 ### 0.3 Proof of Concept
 
-- [ ] **T-0.3.1** Реализовать Noise_XX handshake (XX pattern, X25519, ChaChaPoly, BLAKE2s) -- библиотека `flynn/noise` (Go) или `snow` (Rust)
-- [ ] **T-0.3.2** Реализовать WebSocket-транспорт (клиент + сервер)
-- [ ] **T-0.3.3** Интегрировать Noise handshake с WebSocket -- шифрование/дешифрование Frame
-- [ ] **T-0.3.4** Эхо-сервер: приём зашифрованного Frame, расшифровка, отправка обратно
-- [ ] **T-0.3.5** Бенчмарк: throughput (msg/sec), latency (p50/p99), CPU/RAM при 1K/10K concurrent connections
-- [ ] **T-0.3.6** Документирование результатов PoC, принятие/отклонение технологических решений
+- [x] **T-0.3.1** Реализовать Noise_XX handshake (XX pattern, X25519, ChaChaPoly, BLAKE2s) -- библиотека `flynn/noise` (Go) или `snow` (Rust)
+- [x] **T-0.3.2** Реализовать WebSocket-транспорт (клиент + сервер)
+- [x] **T-0.3.3** Интегрировать Noise handshake с WebSocket -- шифрование/дешифрование Frame
+- [x] **T-0.3.4** Эхо-сервер: приём зашифрованного Frame, расшифровка, отправка обратно
+- [x] **T-0.3.5** Бенчмарк: throughput (msg/sec), latency (p50/p99), CPU/RAM при 1K/10K concurrent connections
+- [x] **T-0.3.6** Документирование результатов PoC, принятие/отклонение технологических решений
 
 **Критерии приёмки Фазы 0:**
 - Noise handshake работает поверх WebSocket, пакеты шифруются/дешифруются корректно
@@ -83,40 +83,40 @@ gantt
 
 ### 1.1 Session Manager
 
-- [ ] **T-1.1.1** Спроектировать state machine сессии: `connecting` -> `active` -> `sleeping` -> `expired`
-- [ ] **T-1.1.2** Реализовать хранение сессий в Redis: ключ `session:<session_id>`, поля: user_id, device_id, crypto_state, connections, created_at, expires_at
-- [ ] **T-1.1.3** Реализовать дублирование состояния сессии в PostgreSQL (для recovery)
-- [ ] **T-1.1.4** Реализовать привязку сессии к устройству (device_id), поддержка нескольких соединений на сессию
-- [ ] **T-1.1.5** Реализовать таймауты: переход в `sleeping` (configurable, default 5 min), переход в `expired` (configurable, default 24h)
-- [ ] **T-1.1.6** Реализовать аутентификацию при создании сессии (токен-based)
-- [ ] **T-1.1.7** Unit-тесты Session Manager (все переходы состояний, edge cases)
+- [x] **T-1.1.1** Спроектировать state machine сессии: `connecting` -> `active` -> `sleeping` -> `expired`
+- [x] **T-1.1.2** Реализовать хранение сессий в Redis: ключ `session:<session_id>`, поля: user_id, device_id, crypto_state, connections, created_at, expires_at
+- [x] **T-1.1.3** Реализовать дублирование состояния сессии в PostgreSQL (для recovery)
+- [x] **T-1.1.4** Реализовать привязку сессии к устройству (device_id), поддержка нескольких соединений на сессию
+- [x] **T-1.1.5** Реализовать таймауты: переход в `sleeping` (configurable, default 5 min), переход в `expired` (configurable, default 24h)
+- [x] **T-1.1.6** Реализовать аутентификацию при создании сессии (токен-based)
+- [x] **T-1.1.7** Unit-тесты Session Manager (все переходы состояний, edge cases)
 
 ### 1.2 Криптографический слой
 
-- [ ] **T-1.2.1** Полная реализация Noise_XX_25519_ChaChaPoly_BLAKE2s -- серверная сторона
-- [ ] **T-1.2.2** Шифрование payload: ChaCha20-Poly1305 с 96-bit nonce (на основе seq counter)
-- [ ] **T-1.2.3** Реализовать ротацию ключей без разрыва сессии (Noise rekey)
-- [ ] **T-1.2.4** Защищённое хранение ключей в памяти (zeroize при уничтожении)
-- [ ] **T-1.2.5** Криптографически стойкий генератор для эфемерных ключей
-- [ ] **T-1.2.6** Тесты: корректность handshake, ротация, replay-атаки, подмена nonce
+- [x] **T-1.2.1** Полная реализация Noise_XX_25519_ChaChaPoly_BLAKE2s -- серверная сторона
+- [x] **T-1.2.2** Шифрование payload: ChaCha20-Poly1305 с 96-bit nonce (на основе seq counter)
+- [x] **T-1.2.3** Реализовать ротацию ключей без разрыва сессии (Noise rekey)
+- [x] **T-1.2.4** Защищённое хранение ключей в памяти (zeroize при уничтожении)
+- [x] **T-1.2.5** Криптографически стойкий генератор для эфемерных ключей
+- [x] **T-1.2.6** Тесты: корректность handshake, ротация, replay-атаки, подмена nonce
 
 ### 1.3 Транспорты
 
-- [ ] **T-1.3.1** Абстракция транспорта: интерфейс `Transport` (Connect, Send, Receive, Close)
-- [ ] **T-1.3.2** Реализация QUIC-транспорта (библиотека `quic-go` / `quinn`)
-- [ ] **T-1.3.3** Реализация gRPC streaming транспорта (bidirectional stream)
-- [ ] **T-1.3.4** Управление пулом соединений на сервере (выбор активного соединения для push)
-- [ ] **T-1.3.5** Reconnect-логика: автоматическое переподключение при потере соединения, сессия сохраняется
-- [ ] **T-1.3.6** Интеграционные тесты: все три транспорта (WS, QUIC, gRPC) с полным Noise handshake
+- [x] **T-1.3.1** Абстракция транспорта: интерфейс `Transport` (Connect, Send, Receive, Close)
+- [x] **T-1.3.2** Реализация QUIC-транспорта (библиотека `quic-go` / `quinn`)
+- [x] **T-1.3.3** Реализация gRPC streaming транспорта (bidirectional stream)
+- [x] **T-1.3.4** Управление пулом соединений на сервере (выбор активного соединения для push)
+- [x] **T-1.3.5** Reconnect-логика: автоматическое переподключение при потере соединения, сессия сохраняется
+- [x] **T-1.3.6** Интеграционные тесты: все три транспорта (WS, QUIC, gRPC) с полным Noise handshake
 
 ### 1.4 Клиентские SDK
 
-- [ ] **T-1.4.1** Go SDK (reference implementation) с абстракцией транспорта
-- [ ] **T-1.4.2** TypeScript/JS SDK (WebSocket-транспорт, noise-c.wasm)
-- [ ] **T-1.4.3** Kotlin SDK (OkHttp WebSocket, noise-java)
-- [ ] **T-1.4.4** Swift SDK (Starscream WebSocket, CryptoKit)
-- [ ] **T-1.4.5** SDK: автоматический выбор транспорта, reconnect, экспоненциальный backoff
-- [ ] **T-1.4.6** Интеграционные end-to-end тесты SDK <-> сервер
+- [x] **T-1.4.1** Go SDK (reference implementation) с абстракцией транспорта
+- [x] **T-1.4.2** TypeScript/JS SDK (WebSocket-транспорт, noise-c.wasm)
+- [x] **T-1.4.3** Kotlin SDK (OkHttp WebSocket, noise-java)
+- [x] **T-1.4.4** Swift SDK (Starscream WebSocket, CryptoKit)
+- [x] **T-1.4.5** SDK: автоматический выбор транспорта, reconnect, экспоненциальный backoff
+- [x] **T-1.4.6** Интеграционные end-to-end тесты SDK <-> сервер
 
 **Критерии приёмки Фазы 1:**
 - Клиент может подключиться по любому из трёх транспортов, пройти Noise handshake, обмениваться зашифрованными Frame
@@ -134,43 +134,43 @@ gantt
 
 ### 2.1 Dispatcher
 
-- [ ] **T-2.1.1** Реализовать Dispatcher: приём расшифрованных AppMessage, определение топика Kafka
-- [ ] **T-2.1.2** Маршрутизация: `user-<recipient_id>` для личных, `group-<group_id>` для групповых, `commands` для команд
-- [ ] **T-2.1.3** Партиционирование по ключу (recipient_id / group_id) для гарантии порядка
-- [ ] **T-2.1.4** Kafka producer: `acks=all`, `min.insync.replicas=2`, идемпотентный producer
-- [ ] **T-2.1.5** Unit-тесты маршрутизации, интеграционные тесты с Kafka
+- [x] **T-2.1.1** Реализовать Dispatcher: приём расшифрованных AppMessage, определение топика Kafka
+- [x] **T-2.1.2** Маршрутизация: `user-<recipient_id>` для личных, `group-<group_id>` для групповых, `commands` для команд
+- [x] **T-2.1.3** Партиционирование по ключу (recipient_id / group_id) для гарантии порядка
+- [x] **T-2.1.4** Kafka producer: `acks=all`, `min.insync.replicas=2`, идемпотентный producer
+- [x] **T-2.1.5** Unit-тесты маршрутизации, интеграционные тесты с Kafka
 
 ### 2.2 Outbox-паттерн
 
-- [ ] **T-2.2.1** Спроектировать таблицу `outbox` (PostgreSQL): id, message_id, topic, key, payload, status, created_at
-- [ ] **T-2.2.2** Реализовать транзакционную запись: сохранение в Outbox + отправка Ack клиенту
-- [ ] **T-2.2.3** Outbox relay: фоновый процесс, читает из Outbox, публикует в Kafka, обновляет статус
-- [ ] **T-2.2.4** Обработка сбоев: retry с экспоненциальным backoff, dead letter queue
-- [ ] **T-2.2.5** Тесты: гарантия at-least-once delivery при crash сервера
+- [x] **T-2.2.1** Спроектировать таблицу `outbox` (PostgreSQL): id, message_id, topic, key, payload, status, created_at
+- [x] **T-2.2.2** Реализовать транзакционную запись: сохранение в Outbox + отправка Ack клиенту
+- [x] **T-2.2.3** Outbox relay: фоновый процесс, читает из Outbox, публикует в Kafka, обновляет статус
+- [x] **T-2.2.4** Обработка сбоев: retry с экспоненциальным backoff, dead letter queue
+- [x] **T-2.2.5** Тесты: гарантия at-least-once delivery при crash сервера
 
 ### 2.3 SyncService (Consumer)
 
-- [ ] **T-2.3.1** Реализовать SyncService -- Kafka consumer group
-- [ ] **T-2.3.2** Inbox: сохранение входящих сообщений в PostgreSQL (таблица `inbox`: user_id, message_id, payload, delivered, created_at)
-- [ ] **T-2.3.3** Push онлайн-клиентам: доставка через Session Manager -> Transport Gateway
-- [ ] **T-2.3.4** Дедупликация по message_id (идемпотентная обработка)
-- [ ] **T-2.3.5** Интеграционные тесты consumer pipeline
+- [x] **T-2.3.1** Реализовать SyncService -- Kafka consumer group
+- [x] **T-2.3.2** Inbox: сохранение входящих сообщений в PostgreSQL (таблица `inbox`: user_id, message_id, payload, delivered, created_at)
+- [x] **T-2.3.3** Push онлайн-клиентам: доставка через Session Manager -> Transport Gateway
+- [x] **T-2.3.4** Дедупликация по message_id (идемпотентная обработка)
+- [x] **T-2.3.5** Интеграционные тесты consumer pipeline
 
 ### 2.4 Офлайн-синхронизация
 
-- [ ] **T-2.4.1** Клиент отправляет `last_seen_message_id` при подключении
-- [ ] **T-2.4.2** Session Manager выполняет `seek` на consumer к нужному offset
-- [ ] **T-2.4.3** Потоковая доставка пропущенных сообщений (backfill)
-- [ ] **T-2.4.4** Пагинация при большом количестве пропущенных сообщений
-- [ ] **T-2.4.5** Тесты: сценарии офлайн 1 час, 1 день, 7 дней
+- [x] **T-2.4.1** Клиент отправляет `last_seen_message_id` при подключении
+- [x] **T-2.4.2** Session Manager выполняет `seek` на consumer к нужному offset
+- [x] **T-2.4.3** Потоковая доставка пропущенных сообщений (backfill)
+- [x] **T-2.4.4** Пагинация при большом количестве пропущенных сообщений
+- [x] **T-2.4.5** Тесты: сценарии офлайн 1 час, 1 день, 7 дней
 
 ### 2.5 Kafka-инфраструктура
 
-- [ ] **T-2.5.1** Настройка топиков: `user-*` (128 партиций), `group-*` (64 партиций), `commands` (32 партиции), `events` (64 партиции)
-- [ ] **T-2.5.2** Replication factor = 3, min.insync.replicas = 2
-- [ ] **T-2.5.3** Retention policy: `user-*` -- 30 дней, `events` -- 90 дней
-- [ ] **T-2.5.4** Мониторинг Kafka: lag monitoring, consumer group health
-- [ ] **T-2.5.5** Документация по масштабированию партиций
+- [x] **T-2.5.1** Настройка топиков: `user-*` (128 партиций), `group-*` (64 партиций), `commands` (32 партиции), `events` (64 партиции)
+- [x] **T-2.5.2** Replication factor = 3, min.insync.replicas = 2
+- [x] **T-2.5.3** Retention policy: `user-*` -- 30 дней, `events` -- 90 дней
+- [x] **T-2.5.4** Мониторинг Kafka: lag monitoring, consumer group health
+- [x] **T-2.5.5** Документация по масштабированию партиций
 
 **Критерии приёмки Фазы 2:**
 - Сообщение проходит путь: Client -> Gateway -> Dispatcher -> Kafka -> SyncService -> Recipient
@@ -188,37 +188,37 @@ gantt
 
 ### 3.1 Потоковая передача медиа
 
-- [ ] **T-3.1.1** Выделенный медиа-канал: отдельное соединение или мультиплексированный поток (QUIC stream / gRPC stream)
-- [ ] **T-3.1.2** Чанкинг на клиенте: разбиение файла на chunks (64 KB), формирование `MediaChunk` (stream_id, chunk_index, total_chunks, hash)
-- [ ] **T-3.1.3** Серверная агрегация: временное хранение chunks (RAM + диск), сборка файла
-- [ ] **T-3.1.4** Валидация: проверка hash каждого chunk и итогового файла
-- [ ] **T-3.1.5** Загрузка в S3-совместимое хранилище (MinIO / AWS S3)
-- [ ] **T-3.1.6** Публикация мета-сообщения в Kafka с URL файла
-- [ ] **T-3.1.7** Тесты: загрузка файлов 1 MB, 100 MB, 1 GB; обработка потери chunk; resume upload
+- [x] **T-3.1.1** Выделенный медиа-канал: отдельное соединение или мультиплексированный поток (QUIC stream / gRPC stream)
+- [x] **T-3.1.2** Чанкинг на клиенте: разбиение файла на chunks (64 KB), формирование `MediaChunk` (stream_id, chunk_index, total_chunks, hash)
+- [x] **T-3.1.3** Серверная агрегация: временное хранение chunks (RAM + диск), сборка файла
+- [x] **T-3.1.4** Валидация: проверка hash каждого chunk и итогового файла
+- [x] **T-3.1.5** Загрузка в S3-совместимое хранилище (MinIO / AWS S3)
+- [x] **T-3.1.6** Публикация мета-сообщения в Kafka с URL файла
+- [x] **T-3.1.7** Тесты: загрузка файлов 1 MB, 100 MB, 1 GB; обработка потери chunk; resume upload
 
 ### 3.2 Sender Keys (групповое E2E-шифрование)
 
-- [ ] **T-3.2.1** Генерация sender_key для каждого участника группы
-- [ ] **T-3.2.2** Распространение sender_key через защищённые 1-to-1 каналы (используя Noise-сессии)
-- [ ] **T-3.2.3** Шифрование группового сообщения одним sender_key (однократное шифрование на группу)
-- [ ] **T-3.2.4** Регулярная ротация sender_key (при добавлении/удалении участника, по таймеру)
-- [ ] **T-3.2.5** Forward secrecy: ratchet sender_key после каждого сообщения
-- [ ] **T-3.2.6** Тесты: группа 2, 10, 100 участников; ротация при join/leave; replay protection
+- [x] **T-3.2.1** Генерация sender_key для каждого участника группы
+- [x] **T-3.2.2** Распространение sender_key через защищённые 1-to-1 каналы (используя Noise-сессии)
+- [x] **T-3.2.3** Шифрование группового сообщения одним sender_key (однократное шифрование на группу)
+- [x] **T-3.2.4** Регулярная ротация sender_key (при добавлении/удалении участника, по таймеру)
+- [x] **T-3.2.5** Forward secrecy: ratchet sender_key после каждого сообщения
+- [x] **T-3.2.6** Тесты: группа 2, 10, 100 участников; ротация при join/leave; replay protection
 
 ### 3.3 Административные команды
 
-- [ ] **T-3.3.1** Создание группы (Command: CreateGroup)
-- [ ] **T-3.3.2** Добавление/удаление участников (Command: AddMember, RemoveMember)
-- [ ] **T-3.3.3** Смена настроек группы (Command: UpdateGroupSettings)
-- [ ] **T-3.3.4** Модерация: удаление сообщений, бан участников
-- [ ] **T-3.3.5** Обработка команд через топик `commands` в Kafka
-- [ ] **T-3.3.6** Тесты: все команды, edge cases (удаление последнего админа, concurrent updates)
+- [x] **T-3.3.1** Создание группы (Command: CreateGroup)
+- [x] **T-3.3.2** Добавление/удаление участников (Command: AddMember, RemoveMember)
+- [x] **T-3.3.3** Смена настроек группы (Command: UpdateGroupSettings)
+- [x] **T-3.3.4** Модерация: удаление сообщений, бан участников
+- [x] **T-3.3.5** Обработка команд через топик `commands` в Kafka
+- [x] **T-3.3.6** Тесты: все команды, edge cases (удаление последнего админа, concurrent updates)
 
 ### 3.4 Потоковое видео/аудио (сигнализация)
 
-- [ ] **T-3.4.1** Управляющие сигналы через основной протокол: StartStream, EndStream, JoinStream
-- [ ] **T-3.4.2** Интеграция с WebRTC: exchange SDP/ICE через Proto-канал
-- [ ] **T-3.4.3** Тесты: установка видеозвонка через Proto-сигнализацию
+- [x] **T-3.4.1** Управляющие сигналы через основной протокол: StartStream, EndStream, JoinStream
+- [x] **T-3.4.2** Интеграция с WebRTC: exchange SDP/ICE через Proto-канал
+- [x] **T-3.4.3** Тесты: установка видеозвонка через Proto-сигнализацию
 
 **Критерии приёмки Фазы 3:**
 - Файл загружается по частям, собирается на сервере, сохраняется в S3, получатель получает ссылку
